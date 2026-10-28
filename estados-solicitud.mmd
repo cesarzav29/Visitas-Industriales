@@ -1,0 +1,24 @@
+stateDiagram-v2
+    [*] --> Borrador: Docente crea solicitud (-01)
+    Borrador --> Enviada: Docente envía
+    Enviada --> Borrador: Jefe Proy. Vinculación regresa con observaciones
+    Enviada --> Verificada: Jefe Proy. Vinculación verifica
+    Verificada --> Aprobada: Jefe Depto. Académico aprueba
+    Verificada --> Rechazada: Jefe Depto. Académico rechaza
+    Aprobada --> GestionOpcion1: DGTV envía oficio -02 (opción 1)
+    GestionOpcion1 --> GestionOpcion2: Empresa 1 no acepta
+    GestionOpcion2 --> Cancelada: Empresa 2 no acepta
+    GestionOpcion1 --> AceptadaEmpresa: Empresa acepta
+    GestionOpcion2 --> AceptadaEmpresa: Empresa acepta
+    AceptadaEmpresa --> EsperandoTransporte: DGTV solicita transporte
+    EsperandoTransporte --> SinTransporte: No hay unidad u operador
+    SinTransporte --> EsperandoTransporte: Cambio de fecha
+    SinTransporte --> Confirmada: Renta externa o van por su cuenta
+    SinTransporte --> Cancelada: Se cancela
+    EsperandoTransporte --> Confirmada: Operador confirma el viaje
+    Confirmada --> ListaEntregada: Docente entrega lista -06 (3 días antes)
+    ListaEntregada --> Realizada: Se hace la visita
+    Realizada --> Cerrada: Docente entrega reporte -05 y oficio -04 sellado
+    Rechazada --> [*]
+    Cancelada --> [*]
+    Cerrada --> [*]

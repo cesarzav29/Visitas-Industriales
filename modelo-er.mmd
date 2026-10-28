@@ -1,0 +1,210 @@
+erDiagram
+    DEPARTAMENTO ||--o{ USUARIO : "adscribe"
+    DEPARTAMENTO ||--o{ CARRERA : "tiene"
+    CARRERA ||--o{ MATERIA : "incluye"
+    CARRERA ||--o{ ALUMNO : "pertenece"
+    MATERIA ||--o{ GRUPO : "se imparte en"
+    USUARIO ||--o{ GRUPO : "docente de"
+    PERIODO_VISITAS ||--o{ GRUPO : "semestre"
+    GRUPO ||--o{ INSCRIPCION : "tiene"
+    ALUMNO ||--o{ INSCRIPCION : "cursa"
+    PERIODO_VISITAS ||--o{ SOLICITUD : "abre"
+    USUARIO ||--o{ SOLICITUD : "crea (docente)"
+    GRUPO ||--o{ SOLICITUD : "para"
+    SOLICITUD ||--|{ OPCION_EMPRESA : "opcion 1 y 2"
+    EMPRESA ||--o{ OPCION_EMPRESA : "propuesta en"
+    SOLICITUD ||--o{ HISTORIAL_ESTADO : "registra"
+    SOLICITUD ||--o{ OFICIO : "genera"
+    SOLICITUD ||--o| VISITA : "se convierte en"
+    EMPRESA ||--o{ VISITA : "recibe"
+    VISITA ||--o{ TRANSPORTE : "usa"
+    UNIDAD ||--o{ TRANSPORTE : "asignada"
+    OPERADOR ||--o{ TRANSPORTE : "maneja"
+    PROVEEDOR_TRANSPORTE ||--o{ TRANSPORTE : "renta"
+    USUARIO ||--o| OPERADOR : "cuenta de"
+    VISITA ||--o{ ASISTENCIA : "lista"
+    ALUMNO ||--o{ ASISTENCIA : "asiste"
+    VISITA ||--o| REPORTE_RESULTADOS : "cierra con"
+    VISITA ||--o{ VIATICO : "foranea"
+    USUARIO ||--o{ VIATICO : "beneficiario"
+    USUARIO ||--o{ CONSTANCIA : "recibe"
+    PERIODO_VISITAS ||--o{ CONSTANCIA : "del semestre"
+
+    DEPARTAMENTO {
+        int id PK
+        string nombre
+        string tipo "academico o administrativo"
+    }
+    USUARIO {
+        int id PK
+        string nombre
+        string correo
+        string telefono
+        string rol "DOCENTE, JEFE_PROY_VINC, JEFE_DEPTO, DGTV, REC_MATERIALES, OPERADOR, REC_FINANCIEROS, ADMIN"
+        int departamento_id FK
+    }
+    CARRERA {
+        int id PK
+        string nombre
+        int departamento_id FK
+    }
+    MATERIA {
+        int id PK
+        string clave
+        string nombre
+        int semestre
+        int carrera_id FK
+    }
+    GRUPO {
+        int id PK
+        string clave
+        int materia_id FK
+        int docente_id FK
+        int periodo_id FK
+    }
+    ALUMNO {
+        int id PK
+        string no_control UK
+        string nombre
+        string sexo
+        string no_seguro_facultativo
+        int carrera_id FK
+    }
+    INSCRIPCION {
+        int id PK
+        int grupo_id FK
+        int alumno_id FK
+    }
+    PERIODO_VISITAS {
+        int id PK
+        string semestre "ENE-JUN o AGO-DIC"
+        int anio
+        date fecha_inicio
+        date fecha_fin
+        bool abierto
+    }
+    EMPRESA {
+        int id PK
+        string nombre
+        string direccion
+        string telefono
+        string titular_nombre
+        string titular_cargo
+        string contacto_nombre
+        string contacto_correo
+        bool foranea
+    }
+    SOLICITUD {
+        int id PK
+        string folio UK
+        int periodo_id FK
+        int docente_id FK
+        int grupo_id FK
+        int num_alumnos "max 40"
+        string punto_salida "Campus Centro o Norte"
+        date fecha_requerida
+        string estado
+        int verifico_id FK
+        int aprobo_id FK
+        datetime creada
+    }
+    OPCION_EMPRESA {
+        int id PK
+        int solicitud_id FK
+        int empresa_id FK
+        int prioridad "1 o 2"
+        text area_objetivo
+        string respuesta "PENDIENTE, ACEPTADA, RECHAZADA"
+    }
+    HISTORIAL_ESTADO {
+        int id PK
+        int solicitud_id FK
+        string estado_anterior
+        string estado_nuevo
+        int usuario_id FK
+        datetime fecha
+        text comentario
+    }
+    OFICIO {
+        int id PK
+        int solicitud_id FK
+        string tipo "SOLICITUD_02, PRESENTACION_04, COMISION"
+        string numero
+        date fecha
+        file archivo
+        file archivo_sellado
+    }
+    VISITA {
+        int id PK
+        int solicitud_id FK
+        int empresa_id FK
+        date fecha
+        time hora_salida
+        time hora_inicio
+        time hora_fin
+        time hora_regreso
+        text requisitos_seguridad
+        string estado
+    }
+    UNIDAD {
+        int id PK
+        string placas
+        string descripcion
+        int capacidad
+        bool activa
+    }
+    OPERADOR {
+        int id PK
+        int usuario_id FK
+        string licencia
+        bool activo
+    }
+    PROVEEDOR_TRANSPORTE {
+        int id PK
+        string nombre
+        string contacto
+        string telefono
+    }
+    TRANSPORTE {
+        int id PK
+        int visita_id FK
+        string tipo "INSTITUCIONAL, RENTADO, PROPIO"
+        int unidad_id FK
+        int operador_id FK
+        int proveedor_id FK
+        decimal costo
+        string estado "SOLICITADO, ASIGNADO, CONFIRMADO, RECHAZADO"
+    }
+    ASISTENCIA {
+        int id PK
+        int visita_id FK
+        int alumno_id FK
+        bool abordo
+    }
+    REPORTE_RESULTADOS {
+        int id PK
+        int visita_id FK
+        string folio
+        int hombres
+        int mujeres
+        text unidades_cubiertas
+        bool objetivos_cumplidos
+        text explicacion
+        text comentarios
+        string atendio_nombre
+        file archivo_firmado
+    }
+    VIATICO {
+        int id PK
+        int visita_id FK
+        int beneficiario_id FK
+        decimal monto
+        string no_cheque
+        string estado
+    }
+    CONSTANCIA {
+        int id PK
+        int docente_id FK
+        int periodo_id FK
+        file archivo
+    }
