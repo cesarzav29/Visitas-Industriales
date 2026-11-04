@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Panel del Docente</h2>
+    </div>
+    
+    <!-- Tarjeta de opción -->
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Mis Solicitudes</h5>
+                <p class="card-text">Crea una nueva solicitud de visita o revisa el estado de las existentes.</p>
+                <a href="#" class="btn btn-primary">Ver Solicitudes</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Listas de Alumnos</h5>
+                <p class="card-text">Registra a los alumnos que asistirán a la visita aprobada.</p>
+                <a href="#" class="btn btn-success">Gestionar Listas</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
