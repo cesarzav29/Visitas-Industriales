@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Carreras</h2>
+    <a href="{% url 'carrera_create' %}" class="btn btn-primary">+ Nueva Carrera</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre de la Carrera</th>
+                    <th>Departamento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for carrera in carreras %}
+                <tr>
+                    <td>{{ carrera.id }}</td>
+                    <td>{{ carrera.nombre }}</td>
+                    <td>{{ carrera.departamento.nombre }}</td> <!-- Aquí se ve la relación -->
+                    <td>
+                        <a href="{% url 'carrera_update' carrera.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-3">No hay carreras registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
