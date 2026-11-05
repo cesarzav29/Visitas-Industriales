@@ -26,4 +26,14 @@ urlpatterns = [
     path('catalogo/carreras/', views.CarreraListView.as_view(), name='carrera_list'),
     path('catalogo/carreras/nuevo/', views.CarreraCreateView.as_view(), name='carrera_create'),
     path('catalogo/carreras/<int:pk>/editar/', views.CarreraUpdateView.as_view(), name='carrera_update'),
+
+    # Materias
+    path('catalogos/materias/', views.MateriaListView.as_view(), name='materia_list'),
+    path('catalogos/materias/nuevo/', views.MateriaCreateView.as_view(), name='materia_create'),
+    path('catalogos/materias/<int:pk>/editar/', views.MateriaUpdateView.as_view(), name='materia_update'),
+
+    # Grupos
+    path('catalogos/grupos/', views.GrupoListView.as_view(), name='grupo_list'),
+    path('catalogos/grupos/nuevo/', views.GrupoCreateView.as_view(), name='grupo_create'),
+    path('catalogos/grupos/<int:pk>/editar/', views.GrupoUpdateView.as_view(), name='grupo_update'),
 ]
