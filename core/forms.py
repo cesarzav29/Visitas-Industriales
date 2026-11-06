@@ -1,5 +1,5 @@
 from django import forms
-from .models import Departamento, Carrera, Materia, Grupo
+from .models import Departamento, Carrera, Materia, Grupo, Unidad
 
 class DepartamentoForm(forms.ModelForm):
     class Meta:
@@ -40,3 +40,18 @@ class GrupoForm(forms.ModelForm):
             'docente': forms.Select(attrs={'class': 'form-select'}),
             'periodo': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+
+class UnidadForm(forms.ModelForm):
+    class Meta:
+        model = Unidad
+        fields = ['placas', 'descripcion', 'capacidad', 'activa']
+        widgets = {
+            'placas': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'capacidad': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+            'activa': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def clean_placas(self):
+        return self.cleaned_data['placas'].upper()

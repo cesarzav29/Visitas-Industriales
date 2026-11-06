@@ -2,9 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Departamento, Carrera, Grupo, Materia
-from .forms import DepartamentoForm, CarreraForm, GrupoForm, MateriaForm
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from .models import Departamento, Carrera, Grupo, Materia, Unidad
+from .forms import DepartamentoForm, CarreraForm, GrupoForm, MateriaForm, UnidadForm
+
+
+GRUPO_RECURSOS_MATERIALES = 'REC_MATERIALES'
 
 @login_required
 def redireccionar_panel(request):
@@ -17,6 +20,8 @@ def redireccionar_panel(request):
         return redirect('panel_alumno')
     elif user.groups.filter(name='DGTV').exists():
         return redirect('panel_dgtv')
+    elif user.groups.filter(name=GRUPO_RECURSOS_MATERIALES).exists():
+        return redirect('unidad_list')
     else:
         # Si es superusuario o no tiene grupo, lo mandamos al admin
         if user.is_superuser:
@@ -107,3 +112,28 @@ class GrupoUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'core/catalogo/form_generico.html'
     success_url = reverse_lazy('grupo_list')
 
+
+class UnidadAccessMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        user = self.request.user
+        return user.is_superuser or user.groups.filter(name=GRUPO_RECURSOS_MATERIALES).exists()
+
+
+class UnidadListView(UnidadAccessMixin, ListView):
+    model = Unidad
+    template_name = 'core/catalogo/unidades_list.html'
+    context_object_name = 'unidades'
+
+
+class UnidadCreateView(UnidadAccessMixin, CreateView):
+    model = Unidad
+    form_class = UnidadForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('unidad_list')
+
+
+class UnidadUpdateView(UnidadAccessMixin, UpdateView):
+    model = Unidad
+    form_class = UnidadForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('unidad_list')
