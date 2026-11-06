@@ -36,4 +36,9 @@ urlpatterns = [
     path('catalogos/grupos/', views.GrupoListView.as_view(), name='grupo_list'),
     path('catalogos/grupos/nuevo/', views.GrupoCreateView.as_view(), name='grupo_create'),
     path('catalogos/grupos/<int:pk>/editar/', views.GrupoUpdateView.as_view(), name='grupo_update'),
+
+    # Unidades de transporte
+    path('catalogo/unidades/', views.UnidadListView.as_view(), name='unidad_list'),
+    path('catalogo/unidades/nuevo/', views.UnidadCreateView.as_view(), name='unidad_create'),
+    path('catalogo/unidades/<int:pk>/editar/', views.UnidadUpdateView.as_view(), name='unidad_update'),
 ]

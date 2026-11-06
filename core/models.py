@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 
 class Departamento(models.Model):
@@ -52,3 +53,22 @@ class Grupo(models.Model):
         verbose_name_plural = "Grupos"
         # Evita que se duplique el mismo grupo para la misma materia en el mismo periodo
         unique_together = ('clave', 'materia', 'periodo')
+
+
+class Unidad(models.Model):
+    placas = models.CharField(max_length=20, unique=True)
+    descripcion = models.CharField('descripción', max_length=150)
+    capacidad = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    activa = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.placas
+
+    class Meta:
+        ordering = ['placas']
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(capacidad__gte=1),
+                name='unidad_capacidad_positiva',
+            ),
+        ]
