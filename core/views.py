@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Departamento, Carrera
-from .forms import DepartamentoForm, CarreraForm
+from .models import Departamento, Carrera, Grupo, Materia, ProveedorTransporte
+from .forms import DepartamentoForm, CarreraForm, GrupoForm, MateriaForm, ProveedorTransporteForm
 
 @login_required
 def redireccionar_panel(request):
@@ -71,10 +71,42 @@ class CarreraUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'core/catalogo/form_generico.html'
     success_url = reverse_lazy('carrera_list')
 
+# Materias
+class MateriaListView(LoginRequiredMixin, ListView):
+    model = Materia
+    template_name = 'core/catalogo/materias_list.html'
+    context_object_name = 'materias'
 
+class MateriaCreateView(LoginRequiredMixin, CreateView):
+    model = Materia
+    form_class = MateriaForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('materia_list')
 
-from .models import ProveedorTransporte
-from .forms import ProveedorTransporteForm
+class MateriaUpdateView(LoginRequiredMixin, UpdateView):
+    model = Materia
+    form_class = MateriaForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('materia_list')
+
+# Grupos
+class GrupoListView(LoginRequiredMixin, ListView):
+    model = Grupo
+    template_name = 'core/catalogo/grupos_list.html'
+    context_object_name = 'grupos'
+
+class GrupoCreateView(LoginRequiredMixin, CreateView):
+    model = Grupo
+    form_class = GrupoForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('grupo_list')
+
+class GrupoUpdateView(LoginRequiredMixin, UpdateView):
+    model = Grupo
+    form_class = GrupoForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('grupo_list')
+
 
 class ProveedorListView(LoginRequiredMixin, ListView):
     model = ProveedorTransporte

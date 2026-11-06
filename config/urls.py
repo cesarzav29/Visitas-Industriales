@@ -26,9 +26,18 @@ urlpatterns = [
     path('catalogo/carreras/', views.CarreraListView.as_view(), name='carrera_list'),
     path('catalogo/carreras/nuevo/', views.CarreraCreateView.as_view(), name='carrera_create'),
     path('catalogo/carreras/<int:pk>/editar/', views.CarreraUpdateView.as_view(), name='carrera_update'),
-]
 
-urlpatterns += [
+    # Materias
+    path('catalogos/materias/', views.MateriaListView.as_view(), name='materia_list'),
+    path('catalogos/materias/nuevo/', views.MateriaCreateView.as_view(), name='materia_create'),
+    path('catalogos/materias/<int:pk>/editar/', views.MateriaUpdateView.as_view(), name='materia_update'),
+
+    # Grupos
+    path('catalogos/grupos/', views.GrupoListView.as_view(), name='grupo_list'),
+    path('catalogos/grupos/nuevo/', views.GrupoCreateView.as_view(), name='grupo_create'),
+    path('catalogos/grupos/<int:pk>/editar/', views.GrupoUpdateView.as_view(), name='grupo_update'),
+
+    # Proveedores de transporte externo
     path('catalogo/proveedores/', views.ProveedorListView.as_view(), name='proveedor_list'),
     path('catalogo/proveedores/nuevo/', views.ProveedorCreateView.as_view(), name='proveedor_create'),
     path('catalogo/proveedores/<int:pk>/editar/', views.ProveedorUpdateView.as_view(), name='proveedor_update'),
