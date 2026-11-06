@@ -36,4 +36,9 @@ urlpatterns = [
     path('catalogos/grupos/', views.GrupoListView.as_view(), name='grupo_list'),
     path('catalogos/grupos/nuevo/', views.GrupoCreateView.as_view(), name='grupo_create'),
     path('catalogos/grupos/<int:pk>/editar/', views.GrupoUpdateView.as_view(), name='grupo_update'),
+
+    # Proveedores de transporte externo
+    path('catalogo/proveedores/', views.ProveedorListView.as_view(), name='proveedor_list'),
+    path('catalogo/proveedores/nuevo/', views.ProveedorCreateView.as_view(), name='proveedor_create'),
+    path('catalogo/proveedores/<int:pk>/editar/', views.ProveedorUpdateView.as_view(), name='proveedor_update'),
 ]

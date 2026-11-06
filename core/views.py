@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Departamento, Carrera, Grupo, Materia
-from .forms import DepartamentoForm, CarreraForm, GrupoForm, MateriaForm
+from .models import Departamento, Carrera, Grupo, Materia, ProveedorTransporte
+from .forms import DepartamentoForm, CarreraForm, GrupoForm, MateriaForm, ProveedorTransporteForm
 
 @login_required
 def redireccionar_panel(request):
@@ -107,3 +107,23 @@ class GrupoUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'core/catalogo/form_generico.html'
     success_url = reverse_lazy('grupo_list')
 
+
+class ProveedorListView(LoginRequiredMixin, ListView):
+    model = ProveedorTransporte
+    template_name = 'core/catalogo/proveedores_list.html'
+    context_object_name = 'proveedores'
+    login_url = reverse_lazy('login')
+
+class ProveedorCreateView(LoginRequiredMixin, CreateView):
+    model = ProveedorTransporte
+    form_class = ProveedorTransporteForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('proveedor_list')
+    login_url = reverse_lazy('login')
+
+class ProveedorUpdateView(LoginRequiredMixin, UpdateView):
+    model = ProveedorTransporte
+    form_class = ProveedorTransporteForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('proveedor_list')
+    login_url = reverse_lazy('login')

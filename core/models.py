@@ -52,3 +52,17 @@ class Grupo(models.Model):
         verbose_name_plural = "Grupos"
         # Evita que se duplique el mismo grupo para la misma materia en el mismo periodo
         unique_together = ('clave', 'materia', 'periodo')
+
+
+class ProveedorTransporte(models.Model):
+    nombre = models.CharField(max_length=150)
+    contacto = models.CharField(max_length=150)
+    telefono = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        ordering = ['nombre']
+        verbose_name = 'Proveedor de transporte'
+        verbose_name_plural = 'Proveedores de transporte'
