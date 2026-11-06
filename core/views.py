@@ -71,3 +71,27 @@ class CarreraUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'core/catalogo/form_generico.html'
     success_url = reverse_lazy('carrera_list')
 
+
+
+from .models import ProveedorTransporte
+from .forms import ProveedorTransporteForm
+
+class ProveedorListView(LoginRequiredMixin, ListView):
+    model = ProveedorTransporte
+    template_name = 'core/catalogo/proveedores_list.html'
+    context_object_name = 'proveedores'
+    login_url = reverse_lazy('login')
+
+class ProveedorCreateView(LoginRequiredMixin, CreateView):
+    model = ProveedorTransporte
+    form_class = ProveedorTransporteForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('proveedor_list')
+    login_url = reverse_lazy('login')
+
+class ProveedorUpdateView(LoginRequiredMixin, UpdateView):
+    model = ProveedorTransporte
+    form_class = ProveedorTransporteForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('proveedor_list')
+    login_url = reverse_lazy('login')

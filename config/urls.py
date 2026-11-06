@@ -27,3 +27,9 @@ urlpatterns = [
     path('catalogo/carreras/nuevo/', views.CarreraCreateView.as_view(), name='carrera_create'),
     path('catalogo/carreras/<int:pk>/editar/', views.CarreraUpdateView.as_view(), name='carrera_update'),
 ]
+
+urlpatterns += [
+    path('catalogo/proveedores/', views.ProveedorListView.as_view(), name='proveedor_list'),
+    path('catalogo/proveedores/nuevo/', views.ProveedorCreateView.as_view(), name='proveedor_create'),
+    path('catalogo/proveedores/<int:pk>/editar/', views.ProveedorUpdateView.as_view(), name='proveedor_update'),
+]

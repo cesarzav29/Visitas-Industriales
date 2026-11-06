@@ -18,3 +18,16 @@ class CarreraForm(forms.ModelForm):
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'departamento': forms.Select(attrs={'class': 'form-select'}),
         }
+
+from .models import ProveedorTransporte
+
+class ProveedorTransporteForm(forms.ModelForm):
+    class Meta:
+        model = ProveedorTransporte
+        fields = ['nombre', 'contacto', 'telefono']
+        labels = {'nombre': 'Nombre del proveedor', 'contacto': 'Persona de contacto', 'telefono': 'Telefono'}
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'contacto': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control', 'type': 'tel'}),
+        }
