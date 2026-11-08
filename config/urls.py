@@ -35,4 +35,9 @@ urlpatterns = [
     path("catalogos/grupos/", views.GrupoListView.as_view(), name="grupo_list"),
     path("catalogos/grupos/nuevo/", views.GrupoCreateView.as_view(), name="grupo_create"),
     path("catalogos/grupos/<int:pk>/editar/", views.GrupoUpdateView.as_view(), name="grupo_update"),
+
+    # Operadores (TQV-37)
+    path("catalogo/operadores/", views.OperadorListView.as_view(), name="operador_list"),
+    path("catalogo/operadores/nuevo/", views.OperadorCreateView.as_view(), name="operador_create"),
+    path("catalogo/operadores/<int:pk>/editar/", views.OperadorUpdateView.as_view(), name="operador_update"),
 ]

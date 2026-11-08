@@ -61,3 +61,31 @@ class Grupo(models.Model):
         verbose_name_plural = "Grupos"
         # Evita que se duplique el mismo grupo para la misma materia en el mismo periodo
         unique_together = ("clave", "materia", "periodo")
+
+
+class Operador(models.Model):
+    """TQV-37 · Operador (chofer) de transporte.
+
+    Se liga a un usuario con rol Operador para que pueda entrar al sistema
+    y confirmar o rechazar los viajes que se le asignen (Sprint 4).
+    Nombre, apellidos y teléfono se toman del usuario.
+    """
+
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="operador",
+        limit_choices_to={"rol__clave": "OPERADOR"},
+    )
+    licencia = models.CharField("número de licencia", max_length=30, unique=True)
+    vigencia_licencia = models.DateField("vigencia de la licencia", null=True, blank=True)
+    direccion = models.CharField("dirección", max_length=200, blank=True)
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.usuario.nombre_completo
+
+    class Meta:
+        verbose_name = "Operador"
+        verbose_name_plural = "Operadores"
+        ordering = ["usuario__apellido_paterno", "usuario__nombres"]
