@@ -3,37 +3,42 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Departamento, Carrera, Grupo, Materia
-from .forms import DepartamentoForm, CarreraForm, GrupoForm, MateriaForm
+from .models import Departamento, Carrera, Grupo, Materia, Operador
+from .forms import DepartamentoForm, CarreraForm, GrupoForm, MateriaForm, OperadorForm
+from usuarios.models import Rol
+from usuarios.permisos import RolRequeridoMixin, rol_requerido
 
 @login_required
 def redireccionar_panel(request):
+    """Manda a cada usuario a su panel según su rol (roles de TQV-28)."""
     user = request.user
-    
-    # Verificamos a qué grupo pertenece el usuario
-    if user.groups.filter(name='Docente').exists():
-        return redirect('panel_docente')
-    elif user.groups.filter(name='Alumno').exists():
-        return redirect('panel_alumno')
-    elif user.groups.filter(name='DGTV').exists():
-        return redirect('panel_dgtv')
-    else:
-        # Si es superusuario o no tiene grupo, lo mandamos al admin
-        if user.is_superuser:
-            return redirect('/admin/')
-        return render(request, 'core/sin_rol.html') # Una página por si no tiene rol
 
-login_required
+    if user.tiene_rol(Rol.Clave.ADMIN) and user.is_staff:
+        return redirect("/admin/")
+    if user.rol_id and user.rol.clave == Rol.Clave.DOCENTE:
+        return redirect("panel_docente")
+    if user.rol_id and user.rol.clave == Rol.Clave.DGTV:
+        return redirect("panel_dgtv")
+    if user.rol_id and user.rol.clave == Rol.Clave.REC_MATERIALES:
+        return redirect("operador_list")
+    # Roles que todavía no tienen panel propio
+    return render(request, "core/inicio.html")
+
+
+@rol_requerido(Rol.Clave.DOCENTE)
 def panel_docente(request):
-    return render(request, 'core/paneles/docente.html')
+    return render(request, "core/paneles/docente.html")
 
-login_required
+
+@login_required
 def panel_alumno(request):
-    return render(request, 'core/paneles/alumno.html')
+    return render(request, "core/paneles/alumno.html")
 
-login_required
+
+@rol_requerido(Rol.Clave.DGTV)
 def panel_dgtv(request):
-    return render(request, 'core/paneles/dgtv.html')
+    return render(request, "core/paneles/dgtv.html")
+
 
 # Departamentos
 class DepartamentoListView(LoginRequiredMixin, ListView):
@@ -107,3 +112,30 @@ class GrupoUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'core/catalogo/form_generico.html'
     success_url = reverse_lazy('grupo_list')
 
+
+# Operadores (TQV-37): solo Recursos Materiales y el administrador
+class OperadorAccesoMixin(RolRequeridoMixin):
+    roles_permitidos = [Rol.Clave.REC_MATERIALES, Rol.Clave.ADMIN]
+
+
+class OperadorListView(OperadorAccesoMixin, ListView):
+    model = Operador
+    template_name = "core/catalogo/operadores_list.html"
+    context_object_name = "operadores"
+
+    def get_queryset(self):
+        return Operador.objects.select_related("usuario")
+
+
+class OperadorCreateView(OperadorAccesoMixin, CreateView):
+    model = Operador
+    form_class = OperadorForm
+    template_name = "core/catalogo/form_generico.html"
+    success_url = reverse_lazy("operador_list")
+
+
+class OperadorUpdateView(OperadorAccesoMixin, UpdateView):
+    model = Operador
+    form_class = OperadorForm
+    template_name = "core/catalogo/form_generico.html"
+    success_url = reverse_lazy("operador_list")
