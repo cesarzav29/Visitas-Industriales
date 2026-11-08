@@ -17,6 +17,7 @@ class Migration(migrations.Migration):
             name='Operador',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('licencia', models.CharField(max_length=30, unique=True, verbose_name='número de licencia')),
                 ('vigencia_licencia', models.DateField(blank=True, null=True, verbose_name='vigencia de la licencia')),
                 ('direccion', models.CharField(blank=True, max_length=200, verbose_name='dirección')),
                 ('activo', models.BooleanField(default=True)),
