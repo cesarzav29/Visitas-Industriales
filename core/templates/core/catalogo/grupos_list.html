@@ -23,7 +23,7 @@
                 <tr>
                     <td>{{ grupo.clave }}</td>
                     <td>{{ grupo.materia.nombre }}</td>
-                    <td>{{ grupo.docente.first_name }} {{ grupo.docente.last_name }}</td>
+                    <td>{{ grupo.docente.nombre_completo }}</td>
                     <td>{{ grupo.periodo }}</td>
                     <td>
                         <a href="{% url 'grupo_update' grupo.pk %}" class="btn btn-sm btn-warning">Editar</a>

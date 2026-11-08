@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Apps del proyecto
+    "usuarios",
     "core",
 ]
 
@@ -57,6 +58,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Base de datos: se lee de DATABASE_URL (PostgreSQL).
+# Ejemplo: postgresql://visitas:visitas@localhost:5432/visitas
 DATABASES = {
     "default": dj_database_url.config(
         default=os.getenv(
@@ -90,5 +92,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = 'home'
-LOGIN_URL = 'login'
+# Usuarios (TQV-28 / TQV-29)
+AUTH_USER_MODEL = "usuarios.Usuario"
+LOGIN_URL = "usuarios:login"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "usuarios:login"
