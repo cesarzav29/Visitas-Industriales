@@ -1,5 +1,6 @@
 """Configuración del Sistema de Visitas a Empresas."""
 import os
+import sys
 from pathlib import Path
 
 import dj_database_url
@@ -86,6 +87,11 @@ STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
+
+# En las pruebas automáticas se usa el almacenamiento simple de archivos estáticos
+# (el de WhiteNoise necesita correr collectstatic antes).
+if "test" in sys.argv:
+    STORAGES["staticfiles"]["BACKEND"] = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
