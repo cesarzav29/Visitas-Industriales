@@ -14,7 +14,7 @@
                     <th>Clave</th>
                     <th>Nombre</th>
                     <th>Semestre</th>
-                    <th>Carreras</th>
+                    <th>Carrera</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -33,6 +33,7 @@
                     </td>
                     <td>
                         <a href="{% url 'materia_update' materia.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'materia_delete' materia.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
                     </td>
                 </tr>
                 {% empty %}

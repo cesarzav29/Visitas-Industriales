@@ -27,6 +27,7 @@
                     <td>{{ grupo.periodo }}</td>
                     <td>
                         <a href="{% url 'grupo_update' grupo.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'grupo_delete' grupo.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
                     </td>
                 </tr>
                 {% empty %}

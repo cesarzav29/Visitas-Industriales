@@ -15,6 +15,7 @@ class Rol(models.Model):
         OPERADOR = "OPERADOR", "Operador de transporte"
         REC_FINANCIEROS = "REC_FINANCIEROS", "Recursos Financieros"
         ADMIN = "ADMIN", "Administrador del sistema"
+        ALUMNO = "Alumno", "Alumno"
 
     clave = models.CharField(max_length=20, choices=Clave.choices, unique=True)
     nombre = models.CharField(max_length=80)

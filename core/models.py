@@ -64,12 +64,6 @@ class Grupo(models.Model):
 
 
 class Operador(models.Model):
-    """TQV-37 · Operador (chofer) de transporte.
-
-    Se liga a un usuario con rol Operador para que pueda entrar al sistema
-    y confirmar o rechazar los viajes que se le asignen (Sprint 4).
-    Nombre, apellidos y teléfono se toman del usuario.
-    """
 
     usuario = models.OneToOneField(
         settings.AUTH_USER_MODEL,
