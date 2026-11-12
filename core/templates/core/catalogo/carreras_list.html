@@ -25,6 +25,7 @@
                     <td>{{ carrera.departamento.nombre }}</td> <!-- Aquí se ve la relación -->
                     <td>
                         <a href="{% url 'carrera_update' carrera.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'carrera_delete' carrera.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
                     </td>
                 </tr>
                 {% empty %}

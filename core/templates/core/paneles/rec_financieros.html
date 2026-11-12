@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-primary">Panel Recursos Financieros</h2>
+        <p class="text-muted">Bienvenido(a), {{ user.nombres }}.</p>
+        <p class="text-muted">Gestión de viáticos y presupuestos para visitas industriales.</p>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm border-success">
+            <div class="card-body">
+                <h5 class="card-title text-success">Autorización de Viáticos</h5>
+                <p class="text-muted">Bienvenido(a), {{ user.nombres }}.</p>
+                <p class="card-text">Revisa y emite los cheques para las comisiones de visitas foráneas.</p>
+                <a href="#" class="btn btn-success">Ver Comisiones</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Reportes de Gastos</h5>
+                <p class="card-text">Consulta el historial de gastos generados por las visitas.</p>
+                <a href="#" class="btn btn-outline-secondary">Ver Reportes</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

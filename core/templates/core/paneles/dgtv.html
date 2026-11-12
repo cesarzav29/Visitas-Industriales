@@ -1,9 +1,10 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="row">
+<div class="row mb-4">
     <div class="col-12">
-        <h2 class="mb-4">Panel DGTV</h2>
+        <h2 class="text-primary">Panel DGTV</h2>
+        <p class="text-muted">Bienvenido(a), {{ user.nombres }}.</p>
     </div>
     
     <div class="col-md-4 mb-3">
@@ -22,6 +23,7 @@
                 <h5 class="card-title">Gestión de Transporte</h5>
                 <p class="card-text">Asigna los autobuses y operadores para las visitas aprobadas.</p>
                 <a href="#" class="btn btn-info text-white">Gestionar transporte</a>
+                <a href="{% url 'proveedor_list' %}" class="btn btn-outline-secondary">Ver proveedores</a>
             </div>
         </div>
     </div>
@@ -35,13 +37,5 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="mt-4">
-    <h4>Catálogo</h4>
-    <a href="{% url 'departamento_list' %}" class="btn btn-outline-dark">Departamentos</a>
-    <a href="{% url 'carrera_list' %}" class="btn btn-outline-dark">Carreras</a>
-    <a href="{% url 'materia_list' %}" class="btn btn-outline-dark">Materias</a>
-    <a href="{% url 'grupo_list' %}" class="btn btn-outline-dark">Grupos</a>
 </div>
 {% endblock %}

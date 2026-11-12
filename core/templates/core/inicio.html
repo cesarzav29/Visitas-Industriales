@@ -1,17 +1,80 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sistema de Visitas a Empresas</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-  <main class="container py-5 text-center">
-    <h1 class="mb-3">Sistema de Visitas a Empresas</h1>
-    <p class="lead">Procedimiento ITQ-VI-PO-001 · Instituto Tecnológico de Querétaro</p>
-    <p class="text-success fw-bold">✔ El proyecto está funcionando</p>
-    <a class="btn btn-primary" href="/admin/">Entrar al panel de administración</a>
-  </main>
-</body>
-</html>
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-primary">Bienvenido(a), {{ user.nombres }} {{ user.apellido_paterno }}</h2>
+        <p class="text-muted">Rol: <strong>{{ user.rol.nombre|default:"Sin Rol Asignado" }}</strong></p>
+    </div>
+</div>
+
+<!-- Según el rol -->
+<div class="row">
+    
+    <!-- Jefe de Departamento Académico -->
+    {% if user.rol.clave == 'JEFE_DEPTO' or user.rol.clave == 'JEFE_DEPARTAMENTO' %}
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Aprobar Solicitudes</h5>
+                    <p class="card-text">Revisa y aprueba las solicitudes de tu departamento.</p>
+                    <a href="#" class="btn btn-primary">Ver Bandeja</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Jefe de Proyectos de Vinculación -->
+    {% if user.rol.clave == 'JEFE_VINCULACION' or user.rol.clave == 'JEFE_PROYECTOS' %}
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Verificar Solicitudes</h5>
+                    <p class="card-text">Verifica que las solicitudes cumplan con la instrumentación didáctica.</p>
+                    <a href="#" class="btn btn-primary">Ver Solicitudes</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Recursos Materiales y Servicios -->
+    {% if user.rol.clave == 'REC_MATERIALES' or user.rol.clave == 'RECURSOS_MATERIALES' %}
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Gestión de Transporte</h5>
+                    <p class="card-text">Asigna unidades y operadores a las visitas aprobadas.</p>
+                    <a href="{% url 'operador_list' %}" class="btn btn-primary">Gestionar Operadores</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Recursos Financieros -->
+    {% if user.rol.clave == 'REC_FINANCIEROS' or user.rol.clave == 'RECURSOS_FINANCIEROS' %}
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Viáticos y Comisiones</h5>
+                    <p class="card-text">Gestiona los recursos para visitas foráneas.</p>
+                    <a href="#" class="btn btn-primary">Ver Viáticos</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Alumno -->
+    {% if user.rol.clave == 'ALUMNO' %}
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Mis Visitas</h5>
+                    <p class="card-text">Consulta tus visitas asignadas.</p>
+                    <a href="#" class="btn btn-primary">Ver mis visitas</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

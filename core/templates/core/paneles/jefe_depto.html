@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-primary">Panel Jefe de Departamento</h2>
+        <p class="text-muted">Bienvenido(a), {{ user.nombres }}.</p>
+        <p class="text-muted">Gestión y aprobación de visitas académicas del departamento.</p>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Solicitudes Pendientes</h5>
+                <p class="card-text">Revisa las solicitudes de visitas enviadas por los docentes de tu área.</p>
+                <a href="#" class="btn btn-primary">Ver Bandeja de Entrada</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Historial de Visitas</h5>
+                <p class="card-text">Consulta las visitas que ya han sido aprobadas y realizadas.</p>
+                <a href="#" class="btn btn-outline-secondary">Ver Historial</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
