@@ -25,6 +25,7 @@
                     <td>{{ depto.descripcion|default:"-" }}</td>
                     <td>
                         <a href="{% url 'departamento_update' depto.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'departamento_delete' depto.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
                     </td>
                 </tr>
                 {% empty %}

@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-primary">Panel Operador de Transporte</h2>
+        <p class="text-muted">Bienvenido(a), {{ user.nombres }}. Aquí están tus asignaciones.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm border-info">
+            <div class="card-body">
+                <h5 class="card-title text-info"><i class="bi bi-bus-front me-2"></i> Mis Viajes Asignados</h5>
+                <p class="card-text">Consulta las visitas en las que te toca manejar y los horarios de salida.</p>
+                <a href="#" class="btn btn-info text-white">Ver Viajes</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm border-secondary">
+            <div class="card-body">
+                <h5 class="card-title text-secondary"><i class="bi bi-card-checklist me-2"></i> Mi Licencia</h5>
+                <p class="card-text">Revisa la vigencia de tu licencia en el sistema.</p>
+                <a href="#" class="btn btn-outline-secondary">Ver mis datos</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
