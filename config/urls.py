@@ -58,4 +58,8 @@ urlpatterns = [
     path("catalogo/operadores/", views.OperadorListView.as_view(), name="operador_list"),
     path("catalogo/operadores/nuevo/", views.OperadorCreateView.as_view(), name="operador_create"),
     path("catalogo/operadores/<int:pk>/editar/", views.OperadorUpdateView.as_view(), name="operador_update"),
+
+    path("catalogo/unidades/", views.UnidadListView.as_view(), name="unidad_list"),
+    path("catalogo/unidades/nuevo/", views.UnidadCreateView.as_view(), name="unidad_create"),
+    path("catalogo/unidades/<int:pk>/editar/", views.UnidadUpdateView.as_view(), name="unidad_update"),
 ]

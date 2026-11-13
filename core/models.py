@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -83,3 +84,22 @@ class Operador(models.Model):
         verbose_name = "Operador"
         verbose_name_plural = "Operadores"
         ordering = ["usuario__apellido_paterno", "usuario__nombres"]
+
+
+class Unidad(models.Model):
+    placas = models.CharField(max_length=20, unique=True)
+    descripcion = models.CharField('descripción', max_length=150)
+    capacidad = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    activa = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.placas
+
+    class Meta:
+        ordering = ['placas']
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(capacidad__gte=1),
+                name='unidad_capacidad_positiva',
+            ),
+        ]
