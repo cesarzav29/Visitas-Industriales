@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from .models import Departamento, Carrera, Materia, Grupo, Operador
+from .models import Departamento, Carrera, Materia, Grupo, Operador, Unidad, ProveedorTransporte
 from usuarios.models import Rol
 
 Usuario = get_user_model()
@@ -127,4 +127,31 @@ class RolForm(forms.ModelForm):
         widgets = {
             'clave': forms.Select(attrs={'class': 'form-select'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class UnidadForm(forms.ModelForm):
+    class Meta:
+        model = Unidad
+        fields = ['placas', 'descripcion', 'capacidad', 'activa']
+        widgets = {
+            'placas': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'capacidad': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+            'activa': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def clean_placas(self):
+        return self.cleaned_data['placas'].upper()
+
+
+class ProveedorTransporteForm(forms.ModelForm):
+    class Meta:
+        model = ProveedorTransporte
+        fields = ['nombre', 'contacto', 'telefono']
+        labels = {'nombre': 'Nombre del proveedor', 'contacto': 'Persona de contacto', 'telefono': 'Telefono'}
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'contacto': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control', 'type': 'tel'}),
         }

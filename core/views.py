@@ -3,11 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Departamento, Carrera, Grupo, Materia, Operador
+from .models import Departamento, Carrera, Grupo, Materia, Operador, Unidad, ProveedorTransporte
 from .forms import (
     DepartamentoForm, CarreraForm, GrupoForm, MateriaForm, 
-    OperadorForm, UsuarioForm, RolForm
+    OperadorForm, UsuarioForm, RolForm, UnidadForm, ProveedorTransporteForm
 )
 from usuarios.models import Usuario, Rol
 from usuarios.permisos import RolRequeridoMixin, rol_requerido
@@ -246,3 +247,41 @@ class RolDeleteView(CatalogoAccesoMixin, DeleteView):
     model = Rol
     template_name = 'core/paneles/admin_confirm_delete.html' 
     success_url = reverse_lazy('admin_roles')
+
+
+class UnidadListView(OperadorAccesoMixin, ListView):
+    model = Unidad
+    template_name = 'core/catalogo/unidades_list.html'
+    context_object_name = 'unidades'
+
+
+class UnidadCreateView(OperadorAccesoMixin, CreateView):
+    model = Unidad
+    form_class = UnidadForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('unidad_list')
+
+
+class UnidadUpdateView(OperadorAccesoMixin, UpdateView):
+    model = Unidad
+    form_class = UnidadForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('unidad_list')
+
+
+class ProveedorListView(LoginRequiredMixin, ListView):
+    model = ProveedorTransporte
+    template_name = 'core/catalogo/proveedores_list.html'
+    context_object_name = 'proveedores'
+
+class ProveedorCreateView(LoginRequiredMixin, CreateView):
+    model = ProveedorTransporte
+    form_class = ProveedorTransporteForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('proveedor_list')
+
+class ProveedorUpdateView(LoginRequiredMixin, UpdateView):
+    model = ProveedorTransporte
+    form_class = ProveedorTransporteForm
+    template_name = 'core/catalogo/form_generico.html'
+    success_url = reverse_lazy('proveedor_list')
