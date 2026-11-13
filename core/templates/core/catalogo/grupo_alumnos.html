@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+{# TQV-34 · Alumnos inscritos en un grupo #}
+{% include 'core/catalogo/_estilos_tabla.html' %}
+<style> .au-form { padding: 20px 24px; } </style>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+  <div>
+    <h1 class="au-titulo mb-1">Grupo {{ grupo.clave }}</h1>
+    <p class="fw-semibold mb-3" style="color:#063d6f">{{ grupo.materia.nombre }} · {{ grupo.docente.nombre_completo }} · {{ grupo.periodo }}</p>
+  </div>
+  <a href="{% url 'grupo_list' %}" class="btn btn-borde"><i class="bi bi-arrow-left"></i> Grupos</a>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Inscritos</div><div class="numero">{{ inscripciones|length }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Sin seguro facultativo</div><div class="numero {% if sin_seguro %}alerta{% endif %}">{{ sin_seguro }}</div></div></div>
+  <div class="col-lg-6">
+    <form method="post" class="au-card au-form h-100">
+      {% csrf_token %}
+      <label class="form-label" for="{{ form.numeros.id_for_label }}"><i class="bi bi-person-plus"></i> Inscribir alumnos por número de control</label>
+      {{ form.numeros }}
+      {% for error in form.numeros.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+      {% if no_encontrados %}
+      <div class="alert alert-warning py-2 mt-2 mb-0 small">
+        No existen en el catálogo: <strong>{{ no_encontrados|join:", " }}</strong>.
+        <a href="{% url 'alumno_create' %}">Regístralos</a> o <a href="{% url 'alumno_importar' %}">cárgalos por CSV</a>.
+      </div>
+      {% endif %}
+      <div class="text-end mt-2"><button type="submit" class="btn btn-azul btn-sm">Inscribir</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="au-card au-tabla">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr><th>#</th><th>No. control</th><th>Nombre</th><th>Sexo</th><th>Carrera</th><th>Seguro facultativo</th><th class="text-center">Quitar</th></tr>
+      </thead>
+      <tbody>
+        {% for i in inscripciones %}
+        <tr class="{% if not i.alumno.activo %}au-inactivo{% endif %}">
+          <td>{{ forloop.counter }}</td>
+          <td class="fw-semibold">{{ i.alumno.no_control }}</td>
+          <td>{{ i.alumno.nombres }} <strong>{{ i.alumno.apellido_paterno }}</strong> {{ i.alumno.apellido_materno }}</td>
+          <td>{{ i.alumno.sexo }}</td>
+          <td>{{ i.alumno.carrera.nombre }}</td>
+          <td>{% if i.alumno.no_seguro_facultativo %}<span class="chip chip-ok">{{ i.alumno.no_seguro_facultativo }}</span>{% else %}<span class="chip chip-falta">Falta NSS</span>{% endif %}</td>
+          <td class="text-center">
+            <form method="post" class="d-inline" onsubmit="return confirm('¿Quitar a {{ i.alumno.no_control }} de este grupo?');">
+              {% csrf_token %}
+              <button type="submit" name="quitar" value="{{ i.pk }}" class="au-accion" title="Quitar del grupo"><i class="bi bi-person-dash-fill"></i></button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4">Este grupo todavía no tiene alumnos inscritos.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

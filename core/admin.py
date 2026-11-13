@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Departamento, Carrera, Materia, Grupo
+from .models import Alumno, Departamento, Carrera, Inscripcion, Materia, Grupo, ProveedorTransporte, Unidad
 
 @admin.register(Departamento)
 class DepartamentoAdmin(admin.ModelAdmin):
@@ -22,3 +22,32 @@ class MateriaAdmin(admin.ModelAdmin):
 class GrupoAdmin(admin.ModelAdmin):
     list_display = ('clave', 'materia', 'docente', 'periodo')
     list_filter = ('periodo', 'materia')
+    search_fields = ('clave', 'materia__nombre')
+
+
+class InscripcionInline(admin.TabularInline):
+    model = Inscripcion
+    extra = 0
+    autocomplete_fields = ("grupo",)
+
+
+@admin.register(Alumno)
+class AlumnoAdmin(admin.ModelAdmin):
+    list_display = ("no_control", "nombres", "apellido_paterno", "apellido_materno", "carrera", "no_seguro_facultativo", "activo")
+    list_filter = ("carrera", "sexo", "activo")
+    search_fields = ("no_control", "nombres", "apellido_paterno", "apellido_materno")
+    inlines = [InscripcionInline]
+
+
+
+@admin.register(Unidad)
+class UnidadAdmin(admin.ModelAdmin):
+    list_display = ("placas", "descripcion", "capacidad", "activa")
+    list_filter = ("activa",)
+    search_fields = ("placas", "descripcion")
+
+
+@admin.register(ProveedorTransporte)
+class ProveedorTransporteAdmin(admin.ModelAdmin):
+    list_display = ("nombre", "contacto", "telefono", "activo")
+    search_fields = ("nombre", "contacto")

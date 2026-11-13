@@ -13,7 +13,7 @@
             <div class="card-body">
                 <h5 class="card-title text-info">Asignación de Transporte</h5>
                 <p class="card-text">Asigna unidades y operadores a las visitas aprobadas.</p>
-                <a href="#" class="btn btn-info text-white">Gestionar Viajes</a>
+                <span class="btn btn-info text-white disabled" aria-disabled="true">Gestionar Viajes</span> <span class="badge bg-secondary align-middle">Próximamente</span>
             </div>
         </div>
     </div>
@@ -23,8 +23,27 @@
             <div class="card-body">
                 <h5 class="card-title">Catálogo de Operadores</h5>
                 <p class="card-text">Administra el personal de transporte y sus licencias.</p>
-                <!-- Este botón sí funciona, ya lo tenías programado -->
-                <a href="{% url 'operador_list' %}" class="btn btn-outline-secondary">Ver Operadores</a>
+                <a href="{% url 'operador_list' %}" class="btn btn-primary">Ver Operadores</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Unidades de Transporte</h5>
+                <p class="card-text">Registra los autobuses del Tec, sus placas y su capacidad.</p>
+                <a href="{% url 'unidad_list' %}" class="btn btn-primary">Ver Unidades</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Proveedores Externos</h5>
+                <p class="card-text">Empresas de transporte para cuando no hay unidad u operador disponible.</p>
+                <a href="{% url 'proveedor_list' %}" class="btn btn-primary">Ver Proveedores</a>
             </div>
         </div>
     </div>

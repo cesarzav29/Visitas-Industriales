@@ -1,43 +1,139 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-primary"><i class="bi bi-people-fill me-2"></i> Gestión de Usuarios</h2>
-    <a href="{% url 'admin_usuario_create' %}" class="btn btn-success">+ Nuevo Usuario</a>
+{# TQV-31 · Administración de usuarios (diseño de la maqueta de Ian) #}
+<style>
+  .au-titulo { color: #063d6f; font-weight: 800; font-size: 2.2rem; margin-bottom: 1.2rem; }
+  .au-card { background: #fff; border: 0; border-radius: 16px; box-shadow: 0 6px 18px rgba(6, 61, 111, .08); }
+  .au-stat { padding: 18px 22px; height: 100%; }
+  .au-stat .etiqueta { color: #063d6f; font-weight: 600; font-size: .95rem; }
+  .au-stat .numero { color: #215d95; font-weight: 800; font-size: 2.4rem; line-height: 1.1; }
+  .au-filtros { padding: 14px 18px; }
+  .au-filtros .form-control, .au-filtros .form-select { border-radius: 10px; }
+  .au-buscar { position: relative; }
+  .au-buscar i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #063d6f; }
+  .au-buscar input { padding-left: 38px; border: 1.5px solid #215d95; }
+  .au-filtros label { color: #063d6f; font-weight: 600; font-size: .9rem; }
+  .btn-azul { background: #063d6f; color: #fff; border-radius: 10px; font-weight: 600; }
+  .btn-azul:hover { background: #042c51; color: #fff; }
+  .au-tabla { padding: 8px 18px 4px; }
+  .au-tabla th { color: #063d6f; font-weight: 700; border-bottom-width: 1px; font-size: .92rem; }
+  .au-tabla td { font-size: .9rem; vertical-align: middle; }
+  .au-sub { font-size: .75rem; color: #215d95; font-weight: 600; }
+  .au-accion { color: #215d95; font-size: 1.1rem; background: none; border: 0; padding: 0 4px; }
+  .au-accion:hover { color: #063d6f; }
+  .au-inactivo td { color: #9aa3ad; }
+  .pagination .page-link { color: #063d6f; border-radius: 8px; margin: 0 3px; }
+  .pagination .active .page-link { background: #063d6f; border-color: #063d6f; color: #fff; }
+</style>
+
+<h1 class="au-titulo">Administración de usuarios</h1>
+
+<!-- Tarjetas con totales (usuarios activos) -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Usuarios totales</div><div class="numero">{{ total_usuarios }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Docentes</div><div class="numero">{{ total_docentes }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Jefes de departamento</div><div class="numero">{{ total_jefes }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Operadores</div><div class="numero">{{ total_operadores }}</div></div></div>
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in usuarios %}
-                <tr>
-                    <td>{{ u.nombres }} {{ u.apellido_paterno }}</td>
-                    <td>{{ u.correo }}</td>
-                    <td>{{ u.rol.nombre|default:"Sin Rol" }}</td>
-                    <td>
-                        {% if u.is_active %}<span class="badge bg-success">Activo</span>
-                        {% else %}<span class="badge bg-danger">Inactivo</span>{% endif %}
-                    </td>
-                    <td>
-                        <a href= "{% url 'admin_usuario_update' u.pk %}" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="{% url 'admin_usuario_delete' u.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5" class="text-center py-3">No hay usuarios registrados.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!-- Búsqueda y filtros -->
+<form method="get" class="au-card au-filtros mb-3">
+  <div class="row g-2 align-items-center">
+    <div class="col-lg-4 au-buscar">
+      <i class="bi bi-search"></i>
+      <input type="search" name="q" value="{{ filtros.q }}" class="form-control" placeholder="Buscar usuario por nombre o correo…">
     </div>
+    <div class="col-6 col-lg-2">
+      <label class="d-block"><i class="bi bi-funnel"></i> Rol</label>
+      <select name="rol" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        {% for r in roles %}<option value="{{ r.clave }}" {% if filtros.rol == r.clave %}selected{% endif %}>{{ r.nombre }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2">
+      <label class="d-block"><i class="bi bi-building"></i> Departamento</label>
+      <select name="departamento" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        {% for d in departamentos %}<option value="{{ d.pk }}" {% if filtros.departamento == d.pk|stringformat:"s" %}selected{% endif %}>{{ d.nombre }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2">
+      <label class="d-block"><i class="bi bi-toggle-on"></i> Estado</label>
+      <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        <option value="activos" {% if filtros.estado == 'activos' %}selected{% endif %}>Activos</option>
+        <option value="inactivos" {% if filtros.estado == 'inactivos' %}selected{% endif %}>Inactivos</option>
+      </select>
+    </div>
+    <div class="col-6 col-lg-2 text-end">
+      <a href="{% url 'admin_usuario_create' %}" class="btn btn-azul w-100"><i class="bi bi-plus-lg"></i> Nuevo usuario</a>
+    </div>
+  </div>
+</form>
+
+<!-- Tabla -->
+<div class="au-card au-tabla">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre completo<div class="au-sub">Nombres | Apellido paterno | Apellido materno</div></th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Rol</th>
+          <th>Departamento</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr class="{% if not u.is_active %}au-inactivo{% endif %}">
+          <td>{{ u.pk|stringformat:"03d" }}</td>
+          <td>
+            {{ u.nombres }} <strong>{{ u.apellido_paterno }}</strong> {{ u.apellido_materno }}
+            {% if not u.is_active %}<span class="badge bg-secondary ms-1">Inactivo</span>{% endif %}
+          </td>
+          <td>{{ u.correo }}</td>
+          <td>{{ u.telefono|default:"—" }}</td>
+          <td>{{ u.rol.nombre|default:"Sin rol" }}</td>
+          <td>{{ u.departamento.nombre|default:"—" }}</td>
+          <td class="text-center text-nowrap">
+            <a href="{% url 'admin_usuario_update' u.pk %}" class="au-accion" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+            {% if u.pk != user.pk %}
+            <form method="post" action="{% url 'admin_usuario_estado' u.pk %}" class="d-inline"
+                  onsubmit="return confirm('{% if u.is_active %}¿Desactivar{% else %}¿Reactivar{% endif %} a {{ u.correo }}?');">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button type="submit" class="au-accion" title="{% if u.is_active %}Desactivar{% else %}Reactivar{% endif %}">
+                <i class="bi {% if u.is_active %}bi-trash-fill{% else %}bi-arrow-counterclockwise{% endif %}"></i>
+              </button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4">No hay usuarios con esos filtros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+  <nav class="py-3">
+    <ul class="pagination justify-content-center mb-0">
+      {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?{{ filtros_url }}&page={{ page_obj.previous_page_number }}">&lsaquo;</a></li>
+      {% endif %}
+      {% for n in paginator.page_range %}
+        <li class="page-item {% if n == page_obj.number %}active{% endif %}"><a class="page-link" href="?{{ filtros_url }}&page={{ n }}">{{ n }}</a></li>
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?{{ filtros_url }}&page={{ page_obj.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
 </div>
 {% endblock %}

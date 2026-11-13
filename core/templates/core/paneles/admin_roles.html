@@ -1,18 +1,20 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-primary"><i class="bi bi-shield-lock-fill me-2"></i> Roles y Permisos</h2>
-    <a href="{% url 'admin_rol_create' %}" class="btn btn-success">+ Nuevo Rol</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-primary"><i class="bi bi-shield-lock-fill me-2"></i> Roles del sistema</h2>
 </div>
+<p class="text-muted">Los roles están definidos por el procedimiento ITQ-VI-PO-001 y el sistema los usa para los permisos,
+   por eso no se pueden crear ni eliminar. Solo puedes cambiar el nombre con el que se muestran.</p>
 
 <div class="card shadow-sm">
     <div class="card-body p-0">
         <table class="table table-hover mb-0">
             <thead class="table-dark">
                 <tr>
-                    <th>Nombre del Rol</th>
+                    <th>Nombre del rol</th>
                     <th>Clave</th>
+                    <th>Usuarios</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -21,16 +23,16 @@
                 <tr>
                     <td class="align-middle">{{ r.nombre }}</td>
                     <td class="align-middle"><code>{{ r.clave }}</code></td>
+                    <td class="align-middle">
+                        <a href="{% url 'admin_usuarios' %}?rol={{ r.clave }}">{{ r.num_usuarios }}</a>
+                    </td>
                     <td>
                         <a href="{% url 'admin_rol_update' r.pk %}" class="btn btn-sm btn-warning">
-                            <i class="bi bi-pencil-square"></i> Editar</a>
-                        <a href="{% url 'admin_rol_delete' r.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                            <i class="bi bi-pencil-square"></i> Cambiar nombre</a>
                     </td>
                 </tr>
                 {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center py-3">No hay roles registrados.</td>
-                </tr>
+                <tr><td colspan="4" class="text-center py-3">No hay roles registrados. Corre <code>python manage.py migrate</code>.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

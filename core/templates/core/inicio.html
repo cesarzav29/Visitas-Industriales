@@ -1,80 +1,17 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
+{# Se muestra solo a usuarios que todavía no tienen rol; los demás van directo a su panel. #}
 <div class="row mb-4">
     <div class="col-12">
         <h2 class="text-primary">Bienvenido(a), {{ user.nombres }} {{ user.apellido_paterno }}</h2>
-        <p class="text-muted">Rol: <strong>{{ user.rol.nombre|default:"Sin Rol Asignado" }}</strong></p>
+        <p class="text-muted">Rol: <strong>{{ user.rol.nombre|default:"Sin rol asignado" }}</strong></p>
     </div>
 </div>
 
-<!-- Según el rol -->
-<div class="row">
-    
-    <!-- Jefe de Departamento Académico -->
-    {% if user.rol.clave == 'JEFE_DEPTO' or user.rol.clave == 'JEFE_DEPARTAMENTO' %}
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Aprobar Solicitudes</h5>
-                    <p class="card-text">Revisa y aprueba las solicitudes de tu departamento.</p>
-                    <a href="#" class="btn btn-primary">Ver Bandeja</a>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Jefe de Proyectos de Vinculación -->
-    {% if user.rol.clave == 'JEFE_VINCULACION' or user.rol.clave == 'JEFE_PROYECTOS' %}
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Verificar Solicitudes</h5>
-                    <p class="card-text">Verifica que las solicitudes cumplan con la instrumentación didáctica.</p>
-                    <a href="#" class="btn btn-primary">Ver Solicitudes</a>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Recursos Materiales y Servicios -->
-    {% if user.rol.clave == 'REC_MATERIALES' or user.rol.clave == 'RECURSOS_MATERIALES' %}
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Gestión de Transporte</h5>
-                    <p class="card-text">Asigna unidades y operadores a las visitas aprobadas.</p>
-                    <a href="{% url 'operador_list' %}" class="btn btn-primary">Gestionar Operadores</a>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Recursos Financieros -->
-    {% if user.rol.clave == 'REC_FINANCIEROS' or user.rol.clave == 'RECURSOS_FINANCIEROS' %}
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Viáticos y Comisiones</h5>
-                    <p class="card-text">Gestiona los recursos para visitas foráneas.</p>
-                    <a href="#" class="btn btn-primary">Ver Viáticos</a>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-    
-    <!-- Alumno -->
-    {% if user.rol.clave == 'ALUMNO' %}
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Mis Visitas</h5>
-                    <p class="card-text">Consulta tus visitas asignadas.</p>
-                    <a href="#" class="btn btn-primary">Ver mis visitas</a>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    Tu cuenta todavía no tiene un rol asignado. Pide al administrador del sistema que te asigne uno
+    para ver tu panel.
 </div>
 {% endblock %}

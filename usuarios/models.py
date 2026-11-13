@@ -15,7 +15,6 @@ class Rol(models.Model):
         OPERADOR = "OPERADOR", "Operador de transporte"
         REC_FINANCIEROS = "REC_FINANCIEROS", "Recursos Financieros"
         ADMIN = "ADMIN", "Administrador del sistema"
-        ALUMNO = "Alumno", "Alumno"
 
     clave = models.CharField(max_length=20, choices=Clave.choices, unique=True)
     nombre = models.CharField(max_length=80)
@@ -55,8 +54,7 @@ class UsuarioManager(BaseUserManager):
 class Usuario(AbstractBaseUser, PermissionsMixin):
     """Usuario del sistema (tabla USUARIO del diagrama entidad-relación).
 
-    Se inicia sesión con el correo. El departamento se agrega en TQV-32,
-    cuando exista el catálogo de departamentos.
+    Se inicia sesión con el correo. El departamento se agregó en TQV-31.
     """
 
     nombres = models.CharField(max_length=80)
@@ -65,6 +63,9 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     correo = models.EmailField("correo electrónico", unique=True)
     telefono = models.CharField("teléfono", max_length=20, blank=True)
     rol = models.ForeignKey(Rol, on_delete=models.PROTECT, null=True, blank=True, related_name="usuarios")
+    departamento = models.ForeignKey(
+        "core.Departamento", on_delete=models.SET_NULL, null=True, blank=True, related_name="usuarios"
+    )
     is_active = models.BooleanField("activo", default=True)
     is_staff = models.BooleanField("acceso al panel de administración", default=False)
     fecha_alta = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+{# TQV-34 · Carga masiva de alumnos por CSV #}
+{% include 'core/catalogo/_estilos_tabla.html' %}
+<style> .au-form { padding: 24px 28px; } </style>
+
+<h1 class="au-titulo">Cargar alumnos desde CSV</h1>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <form method="post" enctype="multipart/form-data" class="au-card au-form h-100">
+      {% csrf_token %}
+      <label class="form-label" for="{{ form.archivo.id_for_label }}">{{ form.archivo.label }}</label>
+      {{ form.archivo }}
+      <div class="form-text">{{ form.archivo.help_text }}</div>
+      {% for error in form.archivo.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <a href="{% url 'alumno_list' %}" class="btn btn-borde">Regresar</a>
+        <button type="submit" class="btn btn-azul"><i class="bi bi-upload"></i> Cargar</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-6">
+    <div class="au-card au-form h-100">
+      <h5 class="fw-bold" style="color:#063d6f">¿Cómo debe ir el archivo?</h5>
+      <ul class="small mb-3">
+        <li>Columnas: <code>no_control, nombres, apellido_paterno, apellido_materno, sexo, no_seguro_facultativo, carrera, correo</code></li>
+        <li><strong>sexo</strong>: H o M · <strong>carrera</strong>: igual que en el catálogo de Carreras.</li>
+        <li>Si el número de control ya existe, se <strong>actualizan</strong> sus datos.</li>
+        <li>En Excel pon la columna del NSS como <strong>Texto</strong> para que no se coma los ceros.</li>
+      </ul>
+      <a href="{% url 'alumno_plantilla' %}" class="btn btn-borde btn-sm"><i class="bi bi-download"></i> Descargar plantilla</a>
+    </div>
+  </div>
+</div>
+
+{% if resultado %}
+<div class="au-card au-tabla mt-3 pt-3">
+  <p class="mb-2"><strong>Resultado:</strong>
+    <span class="chip chip-ok">{{ resultado.creados }} nuevos</span>
+    <span class="chip chip-ok">{{ resultado.actualizados }} actualizados</span>
+    <span class="chip {% if resultado.errores %}chip-falta{% else %}chip-ok{% endif %}">{{ resultado.errores|length }} con error</span>
+  </p>
+  {% if resultado.errores %}
+  <div class="table-responsive">
+    <table class="table table-sm mb-2">
+      <thead><tr><th style="width:90px">Renglón</th><th>Problema</th></tr></thead>
+      <tbody>
+        {% for renglon, mensaje in resultado.errores %}<tr><td>{{ renglon }}</td><td>{{ mensaje }}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="small text-secondary">Corrige esos renglones en el archivo y vuelve a cargarlo; los que ya entraron solo se actualizan.</p>
+  {% else %}
+  <a href="{% url 'alumno_list' %}" class="btn btn-azul btn-sm mb-3">Ver alumnos</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

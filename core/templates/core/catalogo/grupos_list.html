@@ -15,6 +15,7 @@
                     <th>Materia</th>
                     <th>Docente</th>
                     <th>Periodo</th>
+                    <th>Alumnos</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -26,13 +27,18 @@
                     <td>{{ grupo.docente.nombre_completo }}</td>
                     <td>{{ grupo.periodo }}</td>
                     <td>
+                        <a href="{% url 'grupo_alumnos' grupo.pk %}" class="btn btn-sm btn-primary" title="Ver e inscribir alumnos">
+                            <i class="bi bi-people-fill"></i> {{ grupo.num_alumnos }}
+                        </a>
+                    </td>
+                    <td>
                         <a href="{% url 'grupo_update' grupo.pk %}" class="btn btn-sm btn-warning">Editar</a>
                         <a href="{% url 'grupo_delete' grupo.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center py-3">No hay grupos registrados.</td>
+                    <td colspan="6" class="text-center py-3">No hay grupos registrados.</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -9,8 +9,8 @@ from .permisos import rol_requerido
 
 
 class RolesTests(TestCase):
-    def test_existen_los_8_roles(self):
-        self.assertEqual(Rol.objects.count(), 8)
+    def test_existen_todos_los_roles(self):
+        self.assertEqual(Rol.objects.count(), len(Rol.Clave.choices))
 
     def test_superusuario_tiene_rol_admin(self):
         admin = Usuario.objects.create_superuser("admin@prueba.itq", "x", nombres="A", apellido_paterno="B")
