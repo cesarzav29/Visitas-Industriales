@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+{# TQV-34 · Alta y edición de alumno #}
+{% include 'core/catalogo/_estilos_tabla.html' %}
+<style>
+  .au-form { padding: 24px 28px; }
+  .grupos-lista { max-height: 260px; overflow-y: auto; border: 1px solid #dbe3ec; border-radius: 10px; padding: 10px 14px; }
+  .grupos-lista > div { padding: 3px 0; }
+  .grupos-lista input { margin-right: 8px; }
+</style>
+
+<h1 class="au-titulo">{% if object %}Editar alumno {{ object.no_control }}{% else %}Nuevo alumno{% endif %}</h1>
+
+<form method="post" class="au-card au-form" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger py-2">{{ form.non_field_errors }}</div>{% endif %}
+
+  <div class="row g-3">
+    {% for campo in form %}
+      {% if campo.name == 'grupos' %}
+      <div class="col-12">
+        <label class="form-label">{{ campo.label }}</label>
+        <div class="grupos-lista">
+          {% for opcion in campo %}<div>{{ opcion.tag }} {{ opcion.choice_label }}</div>
+          {% empty %}<span class="text-secondary">Todavía no hay grupos registrados.</span>{% endfor %}
+        </div>
+        <div class="form-text">Solo los alumnos inscritos en el grupo pueden ir a su visita.</div>
+      </div>
+      {% elif campo.name == 'activo' %}
+      <div class="col-12 form-check ms-2">
+        {{ campo }} <label class="form-check-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+      </div>
+      {% else %}
+      <div class="col-md-{% if campo.name == 'carrera' %}8{% elif campo.name == 'sexo' %}4{% else %}6{% endif %}">
+        <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label|capfirst }}</label>
+        {{ campo }}
+        {% if campo.name == 'no_seguro_facultativo' %}<div class="form-text">Sin NSS el alumno no puede ir a la visita (lista de asistencia -06).</div>{% endif %}
+        {% for error in campo.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-4">
+    <a href="{% url 'alumno_list' %}" class="btn btn-borde">Cancelar</a>
+    <button type="submit" class="btn btn-azul">Guardar</button>
+  </div>
+</form>
+{% endblock %}

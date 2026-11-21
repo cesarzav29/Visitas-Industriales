@@ -1,5 +1,6 @@
 """Configuración del Sistema de Visitas a Empresas."""
 import os
+import sys
 from pathlib import Path
 
 import dj_database_url
@@ -23,6 +24,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Apps del proyecto
+    "usuarios",
     "core",
 ]
 
@@ -86,7 +88,18 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 
+# En las pruebas automáticas se usa el almacenamiento simple de archivos estáticos
+# (el de WhiteNoise necesita correr collectstatic antes).
+if "test" in sys.argv:
+    STORAGES["staticfiles"]["BACKEND"] = "django.contrib.staticfiles.storage.StaticFilesStorage"
+
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Usuarios (TQV-28 / TQV-29)
+AUTH_USER_MODEL = "usuarios.Usuario"
+LOGIN_URL = "usuarios:login"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "usuarios:login"

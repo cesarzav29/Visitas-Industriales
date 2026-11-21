@@ -1,0 +1,270 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Iniciar sesión · Sistema de Visitas Industriales</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Text:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Diseño de la maqueta de Ian en Canva (TQV-15).
+       Colores tomados del diseño original. La letra original es Canva Sans (exclusiva de Canva);
+       se usa Wix Madefor Text, la más parecida disponible en Google Fonts. */
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --azul-titulo: #063d6f;
+      --azul-texto: #215d95;
+      --azul-boton: #063d6f;
+      --gris-placeholder: #a6a6a6;
+      --borde-campo: #d9dde3;
+      --ojo: #1a73e8;
+    }
+    html, body { margin: 0; height: 100%; }
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: "Wix Madefor Text", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      background: linear-gradient(115deg, #f2791a 0%, #f68f12 35%, #f9a515 70%, #fcbe1a 100%);
+    }
+
+    /* La pantalla funciona como el lienzo de Canva (16:9), pegado a la esquina superior izquierda.
+       --fh = alto del lienzo, --fw = ancho del lienzo. Todo se coloca con los porcentajes del diseño. */
+    .escena {
+      --fh: min(100vh, 56.25vw);
+      --fw: calc(var(--fh) * 16 / 9);
+      /* en pantallas más cuadradas que 16:9 el lienzo se centra en vertical */
+      --oy: max(0px, calc((100vh - var(--fh)) / 2));
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .ilustracion {
+      position: absolute;
+      left: 0; top: var(--oy);
+      height: var(--fh);
+      width: calc(var(--fh) * 1676 / 1882);
+      /* orilla inferior suave para que no se note el corte de la imagen */
+      -webkit-mask-image: linear-gradient(to bottom, #000 93%, transparent 100%);
+              mask-image: linear-gradient(to bottom, #000 93%, transparent 100%);
+      background: url("{% static 'usuarios/img/login-ilustracion.webp' %}") left top / 100% 100% no-repeat;
+    }
+    /* Decoración del lado derecho: el arco blanco y la curva naranja del mismo diseño de Ian.
+       Solo se ven cuando la ventana es más ancha que el lienzo 16:9 (navegador maximizado). */
+    .deco {
+      position: absolute;
+      pointer-events: none;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+    }
+    .deco-arco {
+      left: calc(var(--fw) * .84);
+      top: calc(var(--oy) + var(--fh) * .14);
+      width: calc(var(--fh) * .62);
+      aspect-ratio: 784 / 472;
+      background-image: url("{% static 'usuarios/img/deco-arco.webp' %}");
+      transform: rotate(18deg);
+      opacity: .9;
+    }
+    .deco-curva {
+      left: calc(var(--fw) * .80);
+      top: calc(var(--oy) + var(--fh) * .66);
+      width: calc(var(--fh) * .62);
+      aspect-ratio: 758 / 432;
+      background-image: url("{% static 'usuarios/img/deco-curva.webp' %}");
+      transform: scaleX(-1) rotate(-8deg);
+      opacity: .85;
+    }
+    .tarjeta {
+      position: absolute;
+      left: calc(var(--fw) * .392);
+      top: calc(var(--oy) + var(--fh) * .073);
+      width: calc(var(--fw) * .517);
+      height: calc(var(--fh) * .832);
+      min-height: 380px;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 18px 45px rgba(150, 70, 0, .25);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 10.8%;
+      container-type: inline-size; /* los tamaños de adentro escalan con la tarjeta */
+    }
+    .tarjeta h1 {
+      margin: 0 0 6px;
+      color: var(--azul-titulo);
+      font-weight: 600;
+      font-size: clamp(20px, 6.9cqi, 46px);
+      line-height: 1.2;
+      white-space: nowrap;
+      text-align: center;
+      letter-spacing: -.2px;
+    }
+    .subtitulo {
+      margin: 0 0 clamp(18px, 6.2cqi, 40px);
+      color: var(--azul-texto);
+      font-weight: 500;
+      font-size: clamp(15px, 4.5cqi, 30px);
+      text-align: center;
+    }
+    .alerta {
+      background: #fdecea;
+      color: #a12622;
+      border: 1px solid #f5c2c0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+    .campo { position: relative; margin-bottom: clamp(12px, 4.3cqi, 28px); }
+    .campo .icono {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--azul-titulo);
+      pointer-events: none;
+    }
+    .campo input {
+      display: block;
+      width: 100%;
+      height: clamp(42px, 10.9cqi, 72px);
+      padding: 0 14px 0 46px;
+      border: 1.5px solid var(--borde-campo);
+      border-radius: 9px;
+      font: 600 clamp(14px, 3.45cqi, 22px) "Wix Madefor Text", "Segoe UI", Arial, sans-serif;
+      color: #1f2a37;
+      background: #fff;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .campo input::placeholder { color: var(--gris-placeholder); }
+    .campo input:focus { border-color: var(--azul-texto); box-shadow: 0 0 0 3px rgba(33, 93, 149, .15); }
+    .campo-contrasena input { padding-right: 46px; }
+    .ver-contrasena {
+      position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%);
+      border: 0; background: none; padding: 4px; cursor: pointer;
+      color: var(--ojo);
+      display: flex;
+    }
+    .olvide {
+      display: block;
+      width: fit-content;
+      margin: -2px 0 clamp(14px, 4.7cqi, 30px);
+      color: var(--azul-texto);
+      font-weight: 500;
+      font-size: clamp(13.5px, 3.45cqi, 22px);
+      text-decoration: none;
+    }
+    .olvide:hover { text-decoration: underline; }
+    .boton {
+      display: block;
+      width: 100%;
+      height: clamp(42px, 10.9cqi, 72px);
+      border: 0;
+      border-radius: 9px;
+      background: var(--azul-boton);
+      color: #fff;
+      font: 600 clamp(15px, 4.1cqi, 26px) "Wix Madefor Text", "Segoe UI", Arial, sans-serif;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .boton:hover, .boton:focus-visible { background: #042c51; }
+    .pie {
+      position: absolute;
+      left: 0;
+      width: var(--fw);
+      top: calc(var(--oy) + var(--fh) * .955);
+      margin: 0;
+      color: var(--azul-titulo);
+      font-weight: 500;
+      font-size: 14.5px;
+      text-align: center;
+    }
+
+    /* Pantallas medianas: se reduce un poco el texto */
+    @media (max-width: 960px) {
+      .subtitulo { margin-bottom: 18px; }
+      .campo { margin-bottom: 12px; }
+      .olvide { margin-bottom: 14px; }
+    }
+    /* Celular: solo la tarjeta, sin ilustración */
+    @media (max-width: 767.98px) {
+      .escena {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 24px 16px 56px;
+      }
+      .ilustracion, .deco { display: none; }
+      .tarjeta {
+        position: static;
+        width: 100%; max-width: 440px; height: auto; min-height: 0;
+        transform: none;
+        padding: 40px 24px;
+      }
+      .tarjeta h1 { white-space: normal; }
+      .pie { position: static; width: auto; margin-top: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="escena">
+    <div class="deco deco-arco" aria-hidden="true"></div>
+    <div class="deco deco-curva" aria-hidden="true"></div>
+    <div class="ilustracion" role="img" aria-label="Planta industrial y autobús de visitas"></div>
+
+    <section class="tarjeta">
+      <h1>Sistema de Visitas Industriales</h1>
+      <p class="subtitulo">Inicia sesión para continuar</p>
+
+      {% if form.non_field_errors %}
+        <div class="alerta" role="alert">
+          {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="campo">
+          <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path>
+          </svg>
+          <input type="email" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}"
+                 placeholder="Correo institucional" autocomplete="username"
+                 value="{{ form.username.value|default:'' }}" required autofocus>
+        </div>
+
+        <div class="campo campo-contrasena">
+          <svg class="icono" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path><circle cx="12" cy="16" r="1"></circle>
+          </svg>
+          <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}"
+                 placeholder="Contraseña" autocomplete="current-password" required>
+          <button type="button" class="ver-contrasena" id="ver-contrasena" aria-label="Mostrar contraseña">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+
+        <a href="#" class="olvide" title="Por ahora, pide al administrador que restablezca tu contraseña">¿Olvidaste tu contraseña?</a>
+
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="boton">Iniciar sesión</button>
+      </form>
+    </section>
+
+    <p class="pie">Departamento de Vinculación</p>
+  </main>
+
+  <script>
+    // Botón del ojo: mostrar u ocultar la contraseña
+    document.getElementById("ver-contrasena").addEventListener("click", function () {
+      const campo = document.getElementById("{{ form.password.id_for_label }}");
+      const mostrar = campo.type === "password";
+      campo.type = mostrar ? "text" : "password";
+      this.setAttribute("aria-label", mostrar ? "Ocultar contraseña" : "Mostrar contraseña");
+    });
+  </script>
+</body>
+</html>

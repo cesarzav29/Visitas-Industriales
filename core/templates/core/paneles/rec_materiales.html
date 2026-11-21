@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-primary">Panel Recursos Materiales y Servicios</h2>
+        <p class="text-muted">Bienvenido(a), {{ user.nombres }}.</p>
+        <p class="text-muted">Gestión de transporte y logística para las visitas.</p>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm border-info">
+            <div class="card-body">
+                <h5 class="card-title text-info">Asignación de Transporte</h5>
+                <p class="card-text">Asigna unidades y operadores a las visitas aprobadas.</p>
+                <span class="btn btn-info text-white disabled" aria-disabled="true">Gestionar Viajes</span> <span class="badge bg-secondary align-middle">Próximamente</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Catálogo de Operadores</h5>
+                <p class="card-text">Administra el personal de transporte y sus licencias.</p>
+                <a href="{% url 'operador_list' %}" class="btn btn-primary">Ver Operadores</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Unidades de Transporte</h5>
+                <p class="card-text">Registra los autobuses del Tec, sus placas y su capacidad.</p>
+                <a href="{% url 'unidad_list' %}" class="btn btn-primary">Ver Unidades</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Proveedores Externos</h5>
+                <p class="card-text">Empresas de transporte para cuando no hay unidad u operador disponible.</p>
+                <a href="{% url 'proveedor_list' %}" class="btn btn-primary">Ver Proveedores</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

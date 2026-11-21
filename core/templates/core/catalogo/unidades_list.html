@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+{# TQV-36 · Unidades de transporte (Mildret) #}
+{% include 'core/catalogo/_estilos_tabla.html' %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+  <h1 class="au-titulo">Unidades de transporte</h1>
+  <a href="{% url 'unidad_create' %}" class="btn btn-azul mb-3"><i class="bi bi-plus-lg"></i> Nueva unidad</a>
+</div>
+
+<div class="au-card au-tabla">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead><tr><th>Placas</th><th>Descripción</th><th class="text-center">Capacidad</th><th>Estado</th><th class="text-center">Acciones</th></tr></thead>
+      <tbody>
+        {% for unidad in unidades %}
+        <tr class="{% if not unidad.activa %}au-inactivo{% endif %}">
+          <td class="fw-semibold">{{ unidad.placas }}</td>
+          <td>{{ unidad.descripcion }}</td>
+          <td class="text-center">{{ unidad.capacidad }} pasajeros</td>
+          <td>{% if unidad.activa %}<span class="chip chip-ok">Disponible</span>{% else %}<span class="chip chip-falta">Fuera de servicio</span>{% endif %}</td>
+          <td class="text-center"><a href="{% url 'unidad_update' unidad.pk %}" class="au-accion" title="Editar"><i class="bi bi-pencil-fill"></i></a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center py-4">No hay unidades registradas.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

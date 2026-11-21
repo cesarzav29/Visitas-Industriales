@@ -1,0 +1,43 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Operadores de transporte</h2>
+    <a href="{% url 'operador_create' %}" class="btn btn-primary">+ Nuevo operador</a>
+</div>
+
+<div class="alert alert-info py-2 small">
+    Primero da de alta al usuario con rol <strong>Operador</strong> (panel de administración) y después regístralo aquí con su licencia.
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Correo</th>
+                <th scope="col">Teléfono</th>
+                <th scope="col">Licencia</th>
+                <th scope="col">Vigencia</th>
+                <th scope="col">Activo</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for operador in operadores %}
+                <tr>
+                    <td>{{ operador.usuario.nombre_completo }}</td>
+                    <td>{{ operador.usuario.correo }}</td>
+                    <td>{{ operador.usuario.telefono|default:"—" }}</td>
+                    <td>{{ operador.licencia }}</td>
+                    <td>{{ operador.vigencia_licencia|date:"d/m/Y"|default:"—" }}</td>
+                    <td>{{ operador.activo|yesno:"Sí,No" }}</td>
+                    <td><a href="{% url 'operador_update' operador.pk %}" class="btn btn-sm btn-warning">Editar</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7" class="text-center py-3">No hay operadores registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

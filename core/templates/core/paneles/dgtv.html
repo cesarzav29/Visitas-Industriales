@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-primary">Panel DGTV</h2>
+        <p class="text-muted">Bienvenido(a), {{ user.nombres }}.</p>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Solicitudes Pendientes</h5>
+                <p class="card-text">Revisa y aprueba las solicitudes de visitas enviadas por los docentes.</p>
+                <span class="btn btn-warning disabled" aria-disabled="true">Revisar solicitudes</span> <span class="badge bg-secondary align-middle">Próximamente</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Gestión de Transporte</h5>
+                <p class="card-text">Asigna los autobuses y operadores para las visitas aprobadas.</p>
+                <span class="btn btn-info text-white disabled" aria-disabled="true">Gestionar transporte</span> <span class="badge bg-secondary align-middle">Próximamente</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Alumnos</h5>
+                <p class="card-text">Registra alumnos (uno por uno o por CSV) e inscríbelos en sus grupos.</p>
+                <a href="{% url 'alumno_list' %}" class="btn btn-primary">Ver alumnos</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Convocatorias</h5>
+                <p class="card-text">Publica las fechas y reglas para las visitas del semestre actual.</p>
+                <span class="btn btn-success disabled" aria-disabled="true">Publicar convocatoria</span> <span class="badge bg-secondary align-middle">Próximamente</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

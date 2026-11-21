@@ -1,0 +1,125 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+{# TQV-34 · Catálogo de alumnos #}
+{% include 'core/catalogo/_estilos_tabla.html' %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-1">
+  <h1 class="au-titulo mb-3">Alumnos</h1>
+  <div class="d-flex gap-2 mb-3">
+    <a href="{% url 'alumno_importar' %}" class="btn btn-borde"><i class="bi bi-file-earmark-arrow-up"></i> Cargar CSV</a>
+    <a href="{% url 'alumno_create' %}" class="btn btn-azul"><i class="bi bi-plus-lg"></i> Nuevo alumno</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Alumnos activos</div><div class="numero">{{ total_alumnos }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Con seguro facultativo</div><div class="numero">{{ total_con_seguro }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Sin seguro (no pueden ir)</div><div class="numero {% if total_sin_seguro %}alerta{% endif %}">{{ total_sin_seguro }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Inscripciones a grupos</div><div class="numero">{{ total_inscripciones }}</div></div></div>
+</div>
+
+<form method="get" class="au-card au-filtros mb-3">
+  <div class="row g-2 align-items-end">
+    <div class="col-lg-4 au-buscar">
+      <i class="bi bi-search"></i>
+      <input type="search" name="q" value="{{ filtros.q }}" class="form-control" placeholder="Buscar por número de control o nombre…">
+    </div>
+    <div class="col-6 col-lg-2">
+      <label class="d-block"><i class="bi bi-mortarboard"></i> Carrera</label>
+      <select name="carrera" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">Todas</option>
+        {% for c in carreras %}<option value="{{ c.pk }}" {% if filtros.carrera == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2">
+      <label class="d-block"><i class="bi bi-people"></i> Grupo</label>
+      <select name="grupo" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        {% for g in grupos %}<option value="{{ g.pk }}" {% if filtros.grupo == g.pk|stringformat:"s" %}selected{% endif %}>{{ g.clave }} · {{ g.materia.nombre }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2">
+      <label class="d-block"><i class="bi bi-shield-plus"></i> Seguro</label>
+      <select name="seguro" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        <option value="con" {% if filtros.seguro == 'con' %}selected{% endif %}>Con NSS</option>
+        <option value="sin" {% if filtros.seguro == 'sin' %}selected{% endif %}>Sin NSS</option>
+      </select>
+    </div>
+    <div class="col-6 col-lg-2">
+      <label class="d-block"><i class="bi bi-toggle-on"></i> Estado</label>
+      <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        <option value="activos" {% if filtros.estado == 'activos' %}selected{% endif %}>Activos</option>
+        <option value="inactivos" {% if filtros.estado == 'inactivos' %}selected{% endif %}>Dados de baja</option>
+      </select>
+    </div>
+  </div>
+</form>
+
+<div class="au-card au-tabla">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>No. control</th>
+          <th>Nombre completo<div class="au-sub">Nombres | Apellido paterno | Apellido materno</div></th>
+          <th>Sexo</th>
+          <th>Carrera</th>
+          <th>Seguro facultativo</th>
+          <th class="text-center">Grupos</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in alumnos %}
+        <tr class="{% if not a.activo %}au-inactivo{% endif %}">
+          <td class="fw-semibold">{{ a.no_control }}</td>
+          <td>
+            {{ a.nombres }} <strong>{{ a.apellido_paterno }}</strong> {{ a.apellido_materno }}
+            {% if not a.activo %}<span class="badge bg-secondary ms-1">Baja</span>{% endif %}
+          </td>
+          <td>{{ a.sexo }}</td>
+          <td>{{ a.carrera.nombre }}</td>
+          <td>
+            {% if a.no_seguro_facultativo %}<span class="chip chip-ok">{{ a.no_seguro_facultativo }}</span>
+            {% else %}<span class="chip chip-falta">Falta NSS</span>{% endif %}
+          </td>
+          <td class="text-center">{{ a.num_grupos }}</td>
+          <td class="text-center text-nowrap">
+            <a href="{% url 'alumno_update' a.pk %}" class="au-accion" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+            <form method="post" action="{% url 'alumno_estado' a.pk %}" class="d-inline"
+                  onsubmit="return confirm('{% if a.activo %}¿Dar de baja{% else %}¿Reactivar{% endif %} a {{ a.no_control }}?');">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button type="submit" class="au-accion" title="{% if a.activo %}Dar de baja{% else %}Reactivar{% endif %}">
+                <i class="bi {% if a.activo %}bi-trash-fill{% else %}bi-arrow-counterclockwise{% endif %}"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4">No hay alumnos con esos filtros. Puedes registrarlos uno por uno o <a href="{% url 'alumno_importar' %}">cargar un CSV</a>.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+  <nav class="py-3">
+    <ul class="pagination justify-content-center mb-0">
+      {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?{{ filtros_url }}&page={{ page_obj.previous_page_number }}">&lsaquo;</a></li>
+      {% endif %}
+      {% for n in paginator.page_range %}
+        <li class="page-item {% if n == page_obj.number %}active{% endif %}"><a class="page-link" href="?{{ filtros_url }}&page={{ n }}">{{ n }}</a></li>
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?{{ filtros_url }}&page={{ page_obj.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}
