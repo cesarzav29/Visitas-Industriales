@@ -25,7 +25,6 @@ urlpatterns = [
     path("panel/jefe-depto/", views.panel_jefe_depto, name="panel_jefe_depto"),
     path("panel/jefe-vinculacion/", views.panel_jefe_vinculacion, name="panel_jefe_vinculacion"),
     path("panel/materiales/", views.panel_rec_materiales, name="panel_rec_materiales"),
-    path("panel/financieros/", views.panel_rec_financieros, name="panel_rec_financieros"),
     path("panel/operador/", views.panel_operador, name="panel_operador"),
     
     # 3. Login y logout 

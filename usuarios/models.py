@@ -13,7 +13,6 @@ class Rol(models.Model):
         DGTV = "DGTV", "Gestión Tecnológica y Vinculación"
         REC_MATERIALES = "REC_MATERIALES", "Recursos Materiales y Servicios"
         OPERADOR = "OPERADOR", "Operador de transporte"
-        REC_FINANCIEROS = "REC_FINANCIEROS", "Recursos Financieros"
         ADMIN = "ADMIN", "Administrador del sistema"
 
     clave = models.CharField(max_length=20, choices=Clave.choices, unique=True)

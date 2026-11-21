@@ -30,7 +30,6 @@ PANEL_POR_ROL = {
     Rol.Clave.REC_MATERIALES: "panel_rec_materiales",
     Rol.Clave.JEFE_DEPTO: "panel_jefe_depto",
     Rol.Clave.JEFE_PROY_VINC: "panel_jefe_vinculacion",
-    Rol.Clave.REC_FINANCIEROS: "panel_rec_financieros",
     Rol.Clave.OPERADOR: "panel_operador",
 }
 
@@ -71,10 +70,6 @@ def panel_jefe_vinculacion(request):
 @rol_requerido(Rol.Clave.REC_MATERIALES)
 def panel_rec_materiales(request):
     return render(request, "core/paneles/rec_materiales.html")
-
-@rol_requerido(Rol.Clave.REC_FINANCIEROS)
-def panel_rec_financieros(request):
-    return render(request, "core/paneles/rec_financieros.html")
 
 @rol_requerido(Rol.Clave.OPERADOR)
 def panel_operador(request):
