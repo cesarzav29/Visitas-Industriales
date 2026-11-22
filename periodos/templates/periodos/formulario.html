@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>{% if object %}Editar periodo de visitas{% else %}Registrar periodo de visitas{% endif %}</h2>
+<div class="card mt-3"><div class="card-body">
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+        {% for campo in form %}
+        <div class="mb-3">
+            <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+            {{ campo }}
+            {% for error in campo.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+        {% if not object %}<p>El periodo se registra cerrado. Su apertura y cierre se realizan desde la lista.</p>{% endif %}
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <a class="btn btn-secondary" href="{% url 'periodos:lista' %}">Cancelar</a>
+    </form>
+</div></div>
+{% endblock %}
