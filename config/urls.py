@@ -75,3 +75,6 @@ urlpatterns = [
     path("catalogo/proveedores/nuevo/", views.ProveedorCreateView.as_view(), name="proveedor_create"),
     path("catalogo/proveedores/<int:pk>/editar/", views.ProveedorUpdateView.as_view(), name="proveedor_update"),
 ]
+
+# TQV-59 · Periodos de visitas
+urlpatterns += [path("periodos/", include("periodos.urls"))]
