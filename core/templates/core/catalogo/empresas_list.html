@@ -1,0 +1,53 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class='d-flex justify-content-between align-items-center'>
+<h2>Empresas</h2>
+<a href='{% url 'empresa_importar' %}' class='btn btn-primary'>Importar Excel</a>
+<a href='{% url 'empresa_create' %}' class='btn btn-primary'>Registrar empresa</a>
+</div>
+<form method='get' class='row g-2 my-3'>
+<div class='col-md-4'><label for='q' class='form-label'>Nombre</label>
+<input id='q' name='q' value='{{ filtros.q }}' class='form-control' placeholder='Buscar empresa'></div>
+<div class='col-md-3'><label for='foranea' class='form-label'>Ubicación</label>
+<select id='foranea' name='foranea' class='form-select'>
+<option value=''>Todas</option>
+<option value='0' {% if filtros.foranea == '0' %}selected{% endif %}>Local</option>
+<option value='1' {% if filtros.foranea == '1' %}selected{% endif %}>Foránea</option>
+</select></div>
+<div class='col-md-3'><label for='activa' class='form-label'>Estado</label>
+<select id='activa' name='activa' class='form-select'>
+<option value=''>Todos</option>
+<option value='1' {% if filtros.activa == '1' %}selected{% endif %}>Activa</option>
+<option value='0' {% if filtros.activa == '0' %}selected{% endif %}>Inactiva</option>
+</select></div>
+<div class='col-md-2 d-flex align-items-end'><button class='btn btn-primary' type='submit'>Filtrar</button></div>
+<div><a href='{% url 'empresa_list' %}'>Limpiar filtros</a></div>
+</form>
+<div class='table-responsive'><table class='table align-middle'>
+<thead><tr><th>Empresa</th><th>Ciudad</th><th>Contacto</th><th>Cupo</th><th>Tipo</th><th>Estado</th><th>Acciones</th></tr></thead>
+<tbody>
+{% for empresa in empresas %}
+<tr>
+<td>{{ empresa.nombre }}<br><small>{{ empresa.direccion }}</small></td>
+<td>{{ empresa.ciudad }}</td>
+<td>{{ empresa.contacto_nombre }}<br>{{ empresa.contacto_correo }}<br>{{ empresa.contacto_telefono }}</td>
+<td>{{ empresa.cupo_maximo }}</td>
+<td>{% if empresa.foranea %}Foránea{% else %}Local{% endif %}</td>
+<td>{% if empresa.activa %}Activa{% else %}Inactiva{% endif %}</td>
+<td>
+<a href='{% url 'empresa_update' empresa.pk %}' class='btn btn-sm btn-primary'>Editar</a>
+<form method='post' action='{% url 'empresa_estado' empresa.pk %}' class='d-inline'>
+{% csrf_token %}
+<button type='submit' class='btn btn-sm btn-warning'>{% if empresa.activa %}Desactivar{% else %}Activar{% endif %}</button>
+</form>
+</td></tr>
+{% empty %}<tr><td colspan='7'>No hay empresas que coincidan con la búsqueda.</td></tr>{% endfor %}
+</tbody></table></div>
+{% if is_paginated %}
+<nav aria-label='Páginas de empresas'>
+{% if page_obj.has_previous %}<a href='?page={{ page_obj.previous_page_number }}&amp;{{ filtros_url }}'>Anterior</a>{% endif %}
+<span class='mx-3'>Página {{ page_obj.number }} de {{ paginator.num_pages }}</span>
+{% if page_obj.has_next %}<a href='?page={{ page_obj.next_page_number }}&amp;{{ filtros_url }}'>Siguiente</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

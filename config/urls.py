@@ -75,3 +75,7 @@ urlpatterns = [
     path("catalogo/proveedores/nuevo/", views.ProveedorCreateView.as_view(), name="proveedor_create"),
     path("catalogo/proveedores/<int:pk>/editar/", views.ProveedorUpdateView.as_view(), name="proveedor_update"),
 ]
+
+
+# TQV-35 - Catalogo de empresas
+urlpatterns += [path('catalogo/empresas/', include('core.empresas_urls'))]

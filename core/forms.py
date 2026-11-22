@@ -6,6 +6,12 @@ from usuarios.models import Rol
 
 Usuario = get_user_model()
 
+class DigitosFormField(forms.CharField):
+    def to_python(self, valor):
+        texto = super().to_python(valor)
+        return ''.join(c for c in texto if not c.isspace() and c not in '-().')
+
+
 class DepartamentoForm(forms.ModelForm):
     class Meta:
         model = Departamento
@@ -156,6 +162,14 @@ class RolForm(forms.ModelForm):
 class AlumnoForm(forms.ModelForm):
     """Alta y edición de alumnos, con los grupos en los que está inscrito."""
 
+    no_seguro_facultativo = DigitosFormField(
+        label='Número de seguro facultativo (NSS)', required=False,
+        max_length=11,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': '11 dígitos', 'maxlength': 20,
+        }),
+    )
+
     class Meta:
         model = Alumno
         fields = ["no_control", "nombres", "apellido_paterno", "apellido_materno", "sexo",
@@ -242,6 +256,14 @@ class UnidadForm(forms.ModelForm):
 
 # --- TQV-38 · Proveedores de transporte externo ---
 class ProveedorTransporteForm(forms.ModelForm):
+    telefono = DigitosFormField(
+        label='Teléfono', max_length=10,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'type': 'tel',
+            'placeholder': '10 dígitos', 'maxlength': 30,
+        }),
+    )
+
     class Meta:
         model = ProveedorTransporte
         fields = ["nombre", "contacto", "telefono", "correo", "activo"]

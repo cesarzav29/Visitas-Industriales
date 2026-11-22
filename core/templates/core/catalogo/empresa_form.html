@@ -1,0 +1,19 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>{% if object %}Editar empresa{% else %}Registrar empresa{% endif %}</h2>
+<div class='card mt-3'><div class='card-body'>
+<form method='post'>
+{% csrf_token %}
+{{ form.non_field_errors }}
+{% for campo in form %}
+<div class='mb-3'>
+{{ campo.label_tag }} {{ campo }}
+{% for error in campo.errors %}<div class='text-danger'>{{ error }}</div>{% endfor %}
+{% if campo.help_text %}<div class='form-text'>{{ campo.help_text }}</div>{% endif %}
+</div>
+{% endfor %}
+<button type='submit' class='btn btn-primary'>Guardar</button>
+<a href='{% url 'empresa_list' %}' class='btn btn-secondary'>Cancelar</a>
+</form>
+</div></div>
+{% endblock %}
