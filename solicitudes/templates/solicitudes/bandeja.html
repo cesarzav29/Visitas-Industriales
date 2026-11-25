@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Bandeja de Solicitudes Enviadas</h2>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Grupo</th>
+                <th>Docente</th>
+                <th>Fecha Visita</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for solicitud in solicitudes %}
+            <tr>
+                <td>{{ solicitud.id }}</td>
+                <td>{{ solicitud.grupo }}</td>
+                <td>{{ solicitud.docente.nombre_completo }}</td>
+                <td>{{ solicitud.fecha_visita }}</td>
+                <td>
+                    <a href="{% url 'solicitudes:detalle' solicitud.pk %}" class="btn btn-primary btn-sm">Ver detalle</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No hay solicitudes en estado "Enviada".</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

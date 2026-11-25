@@ -74,4 +74,7 @@ urlpatterns = [
     path("catalogo/proveedores/", views.ProveedorListView.as_view(), name="proveedor_list"),
     path("catalogo/proveedores/nuevo/", views.ProveedorCreateView.as_view(), name="proveedor_create"),
     path("catalogo/proveedores/<int:pk>/editar/", views.ProveedorUpdateView.as_view(), name="proveedor_update"),
+
+    # Solicitudes
+    path("solicitudes/", include("solicitudes.urls")),
 ]

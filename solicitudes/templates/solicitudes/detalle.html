@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Detalle de la Solicitud #{{ solicitud.id }}</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <p><strong>Grupo:</strong> {{ solicitud.grupo }}</p>
+            <p><strong>Número de alumnos:</strong> {{ solicitud.numero_alumnos }}</p>
+            <p><strong>Empresas:</strong> {{ solicitud.empresas }}</p>
+            <p><strong>Fecha de visita:</strong> {{ solicitud.fecha_visita }}</p>
+            <p><strong>Objetivo:</strong> {{ solicitud.objetivo }}</p>
+            <p><strong>Estado actual:</strong> <span class="badge bg-warning">{{ solicitud.get_estado_display }}</span></p>
+        </div>
+    </div>
+    <a href="{% url 'solicitudes:bandeja' %}" class="btn btn-secondary mt-3">Volver a la bandeja</a>
+</div>
+{% endblock %}
