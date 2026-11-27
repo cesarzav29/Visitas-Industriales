@@ -1,6 +1,9 @@
 """TQV-28 · Modelo de usuario con los 8 roles del procedimiento ITQ-VI-PO-001."""
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.exceptions import ValidationError
 from django.db import models
+
+from .constants import AREA_OPERADORES
 
 
 class Rol(models.Model):
@@ -92,6 +95,32 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.nombres
+
+    @property
+    def es_operador(self):
+        return bool(self.rol_id and self.rol.clave == Rol.Clave.OPERADOR)
+
+    @property
+    def departamento_mostrado(self):
+        if self.es_operador:
+            return AREA_OPERADORES
+        return self.departamento.nombre if self.departamento_id else ""
+
+    def clean(self):
+        super().clean()
+        if self.es_operador:
+            self.departamento = None
+        elif self.pk and type(self).objects.filter(pk=self.pk, operador__isnull=False).exists():
+            raise ValidationError({
+                "rol": "Este usuario está vinculado a un operador interno. Reasigna primero ese operador antes de cambiar el rol.",
+            })
+
+    def save(self, *args, **kwargs):
+        if self.es_operador:
+            self.departamento = None
+            if kwargs.get("update_fields"):
+                kwargs["update_fields"] = set(kwargs["update_fields"]) | {"departamento"}
+        return super().save(*args, **kwargs)
 
     def tiene_rol(self, *claves):
         """True si el usuario tiene alguno de los roles indicados (el superusuario siempre pasa)."""

@@ -8,7 +8,7 @@
                 <h4 class="mb-0">Guardar Registro</h4>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" id="registro-form" data-rol-operador="{{ form.rol_operador_pk|default:'' }}">
                     {% csrf_token %}
                     
                     {% if form.non_field_errors %}
@@ -19,8 +19,8 @@
 
                     <!-- Campos del formulario -->
                     {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">{{ field.label }}</label>
+                        <div class="mb-3"{% if field.name == 'departamento' %} id="usuario-departamento"{% if form.es_operador %} hidden{% endif %}{% endif %}>
+                            <label class="form-label fw-bold" for="{{ field.id_for_label }}">{{ field.label }}</label>
                             {{ field }}
                             {% if field.errors %}
                                 <div class="text-danger small">{{ field.errors }}</div>
@@ -31,6 +31,10 @@
                         </div>
                     {% endfor %}
 
+                    {% if form.rol_operador_pk %}
+                    <div id="usuario-area-operador" class="alert alert-info"{% if not form.es_operador %} hidden{% endif %}>{{ form.area_operador }}</div>
+                    {% endif %}
+
                     <div class="d-flex justify-content-between mt-4">
                         <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-success">Guardar Cambios</button>
@@ -40,4 +44,21 @@
         </div>
     </div>
 </div>
+<script>
+(() => {
+    const formulario = document.getElementById('registro-form');
+    const rol = formulario.elements.namedItem('rol');
+    const departamento = document.getElementById('usuario-departamento');
+    const area = document.getElementById('usuario-area-operador');
+    if (!rol || !departamento || !area || !formulario.dataset.rolOperador) return;
+    function mostrarDepartamento() {
+        const esOperador = rol.value === formulario.dataset.rolOperador;
+        departamento.hidden = esOperador;
+        area.hidden = !esOperador;
+        departamento.querySelector('select').disabled = esOperador;
+    }
+    rol.addEventListener('change', mostrarDepartamento);
+    mostrarDepartamento();
+})();
+</script>
 {% endblock %}
