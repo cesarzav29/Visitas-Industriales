@@ -120,6 +120,7 @@
         <a href="{% url 'materia_list' %}"><i class="bi bi-book me-2"></i> Materias</a>
         <a href="{% url 'grupo_list' %}"><i class="bi bi-people me-2"></i> Grupos</a>
         <a href="{% url 'alumno_list' %}"><i class="bi bi-person-vcard me-2"></i> Alumnos</a>
+        <a href="{% url 'solicitudes:bandeja_dgtv' %}"><i class="bi bi-inbox me-2"></i> Solicitudes</a>
         {% endif %}
         {% if user.rol.clave == 'REC_MATERIALES' or user.rol.clave == 'ADMIN' or user.is_superuser %}
         <a href="{% url 'operador_list' %}"><i class="bi bi-person-badge me-2"></i> Operadores</a>

@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+{# TQV-77 · Bandeja de solicitudes del DGTV #}
+{% include 'core/catalogo/_estilos_tabla.html' %}
+<style>
+  .tabs-dgtv .btn { border-radius: 999px; }
+  .chip-estado { background: #e8f0f9; color: #063d6f; }
+</style>
+
+<h1 class="au-titulo">Solicitudes de visita</h1>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Por recibir</div><div class="numero {% if total_pendientes %}alerta{% endif %}">{{ total_pendientes }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="au-card au-stat"><div class="etiqueta">Recibidas</div><div class="numero">{{ total_recibidas }}</div></div></div>
+</div>
+
+<div class="tabs-dgtv d-flex gap-2 mb-3">
+  <a href="?" class="btn {% if ver == 'pendientes' %}btn-azul{% else %}btn-borde{% endif %}">Firmadas, por recibir</a>
+  <a href="?ver=recibidas" class="btn {% if ver == 'recibidas' %}btn-azul{% else %}btn-borde{% endif %}">Recibidas</a>
+</div>
+
+<div class="au-card au-tabla">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr><th>No.</th><th>Docente</th><th>Grupo · Materia</th><th class="text-center">Alumnos</th><th>Fecha de visita</th><th>Estado</th><th class="text-center">Acciones</th></tr>
+      </thead>
+      <tbody>
+        {% for s in solicitudes %}
+        <tr>
+          <td class="fw-semibold">{{ s.pk|stringformat:"03d" }}</td>
+          <td>{{ s.docente.nombre_completo }}</td>
+          <td>{{ s.grupo.clave }} · {{ s.grupo.materia.nombre }}</td>
+          <td class="text-center">{{ s.numero_alumnos }}</td>
+          <td>{{ s.fecha_visita|date:"d/m/Y" }}</td>
+          <td><span class="chip {% if s.estado == 'RECIBIDA_DGTV' %}chip-ok{% else %}chip-estado{% endif %}">{{ s.get_estado_display }}</span></td>
+          <td class="text-center text-nowrap">
+            <a href="{% url 'solicitudes:seguimiento' s.pk %}" class="au-accion" title="Ver detalle y firmas"><i class="bi bi-eye-fill"></i></a>
+            {% if s.estado == 'APROBADA' %}
+            <form method="post" action="{% url 'solicitudes:recibir' s.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-azul btn-sm ms-1"><i class="bi bi-inbox-fill"></i> Recibir</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4">
+          {% if ver == 'recibidas' %}Todavía no has recibido solicitudes.{% else %}No hay solicitudes firmadas por los dos jefes pendientes de recibir.{% endif %}
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

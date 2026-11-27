@@ -156,6 +156,12 @@ class RolForm(forms.ModelForm):
 class AlumnoForm(forms.ModelForm):
     """Alta y edición de alumnos, con los grupos en los que está inscrito."""
 
+    # Acepta el NSS con guiones o espacios (ej. 123-4567-8901); se limpia a 11 dígitos en clean_
+    no_seguro_facultativo = forms.CharField(
+        label="Número de seguro facultativo (NSS)", max_length=20, required=False,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "11 dígitos"}),
+    )
+
     class Meta:
         model = Alumno
         fields = ["no_control", "nombres", "apellido_paterno", "apellido_materno", "sexo",
@@ -242,6 +248,12 @@ class UnidadForm(forms.ModelForm):
 
 # --- TQV-38 · Proveedores de transporte externo ---
 class ProveedorTransporteForm(forms.ModelForm):
+    # Acepta el teléfono con espacios o guiones (ej. 442 123 4567); se limpia a 10 dígitos en clean_
+    telefono = forms.CharField(
+        label="Teléfono", max_length=20,
+        widget=forms.TextInput(attrs={"class": "form-control", "type": "tel", "placeholder": "10 dígitos"}),
+    )
+
     class Meta:
         model = ProveedorTransporte
         fields = ["nombre", "contacto", "telefono", "correo", "activo"]
