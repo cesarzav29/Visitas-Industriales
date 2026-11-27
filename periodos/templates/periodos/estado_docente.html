@@ -1,0 +1,13 @@
+{% load periodos_tags %}
+{% periodo_abierto as periodo %}
+{% if periodo %}
+<div class="alert alert-info" role="status">
+    <strong>Periodo de visitas abierto: {{ periodo }}</strong><br>
+    Las fechas de visita deben estar entre {{ periodo.fecha_inicio|date:"d/m/Y" }} y {{ periodo.fecha_fin|date:"d/m/Y" }}, ambas incluidas.
+</div>
+{% else %}
+<div class="alert alert-warning" role="status">
+    <strong>No hay periodo de visitas abierto</strong><br>
+    No puedes crear solicitudes hasta que Gestión Tecnológica y Vinculación abra un periodo.
+</div>
+{% endif %}

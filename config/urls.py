@@ -82,3 +82,5 @@ urlpatterns = [
 
 # TQV-35 - Catalogo de empresas
 urlpatterns += [path('catalogo/empresas/', include('core.empresas_urls'))]
+# TQV-59 · Periodos de visitas
+urlpatterns += [path("periodos/", include("periodos.urls"))]
