@@ -1,7 +1,10 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.db.models.functions import Lower, Trim
+
+from usuarios.constants import AREA_OPERADORES
 
 
 class Departamento(models.Model):
@@ -66,25 +69,89 @@ class Grupo(models.Model):
 
 
 class Operador(models.Model):
+    class Tipo(models.TextChoices):
+        INTERNO = "INTERNO", "Interno"
+        EXTERNO = "EXTERNO", "Externo"
 
+    tipo = models.CharField(max_length=7, choices=Tipo.choices, default=Tipo.INTERNO)
     usuario = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="operador",
         limit_choices_to={"rol__clave": "OPERADOR"},
+        null=True,
+        blank=True,
+    )
+    nombre_externo = models.CharField("nombre del operador externo", max_length=150, blank=True)
+    telefono_externo = models.CharField(
+        "teléfono del operador externo", max_length=20, blank=True,
+        validators=[RegexValidator(r"^\+?[0-9]+$", "Escribe el teléfono con dígitos y, opcionalmente, + al inicio.")],
+    )
+    proveedor = models.ForeignKey(
+        "ProveedorTransporte", on_delete=models.PROTECT, null=True, blank=True,
+        related_name="operadores", verbose_name="proveedor de transporte",
     )
     licencia = models.CharField("número de licencia", max_length=30, unique=True)
     vigencia_licencia = models.DateField("vigencia de la licencia", null=True, blank=True)
     direccion = models.CharField("dirección", max_length=200, blank=True)
     activo = models.BooleanField(default=True)
 
+    @property
+    def nombre_completo(self):
+        if self.tipo == self.Tipo.EXTERNO:
+            return self.nombre_externo
+        return self.usuario.nombre_completo if self.usuario_id else ""
+
+    @property
+    def telefono(self):
+        if self.tipo == self.Tipo.EXTERNO:
+            return self.telefono_externo
+        return self.usuario.telefono if self.usuario_id else ""
+
+    @property
+    def correo(self):
+        return self.usuario.correo if self.usuario_id else ""
+
+    @property
+    def area_adscripcion(self):
+        return AREA_OPERADORES
+
+    def clean(self):
+        super().clean()
+        errores = {}
+        if self.tipo == self.Tipo.INTERNO:
+            if not self.usuario_id:
+                errores["usuario"] = "Selecciona un usuario con rol Operador para el operador interno."
+            elif not self.usuario.rol_id or self.usuario.rol.clave != "OPERADOR":
+                errores["usuario"] = "El usuario seleccionado debe tener rol Operador."
+        elif self.tipo == self.Tipo.EXTERNO:
+            if not self.nombre_externo.strip():
+                errores["nombre_externo"] = "Escribe el nombre del operador externo."
+            if not self.telefono_externo.strip():
+                errores["telefono_externo"] = "Escribe el teléfono del operador externo."
+            if not self.proveedor_id:
+                errores["proveedor"] = "Selecciona el proveedor del operador externo."
+        if errores:
+            raise ValidationError(errores)
+
     def __str__(self):
-        return self.usuario.nombre_completo
+        return self.nombre_completo
 
     class Meta:
         verbose_name = "Operador"
         verbose_name_plural = "Operadores"
-        ordering = ["usuario__apellido_paterno", "usuario__nombres"]
+        ordering = ["tipo", "nombre_externo", "usuario__apellido_paterno", "usuario__nombres", "pk"]
+        constraints = [
+            models.CheckConstraint(
+                condition=(
+                    models.Q(tipo="INTERNO", usuario__isnull=False, proveedor__isnull=True,
+                             nombre_externo="", telefono_externo="")
+                    | (models.Q(tipo="EXTERNO", usuario__isnull=True, proveedor__isnull=False)
+                       & ~models.Q(nombre_externo="") & ~models.Q(telefono_externo=""))
+                ),
+                name="operador_datos_segun_tipo",
+            ),
+        ]
 
 
 # --- TQV-34 · Catálogo de alumnos e inscripción a grupos ---

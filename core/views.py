@@ -197,18 +197,27 @@ class OperadorListView(OperadorAccesoMixin, ListView):
     template_name = "core/catalogo/operadores_list.html"
     context_object_name = "operadores"
     def get_queryset(self):
-        return Operador.objects.select_related("usuario")
+        operadores = Operador.objects.select_related("usuario", "proveedor")
+        tipo = self.request.GET.get("tipo", "")
+        if tipo in Operador.Tipo.values:
+            operadores = operadores.filter(tipo=tipo)
+        return operadores
+
+    def get_context_data(self, **kwargs):
+        contexto = super().get_context_data(**kwargs)
+        contexto.update(tipos=Operador.Tipo.choices, tipo=self.request.GET.get("tipo", ""))
+        return contexto
 
 class OperadorCreateView(OperadorAccesoMixin, CreateView):
     model = Operador
     form_class = OperadorForm
-    template_name = "core/catalogo/form_generico.html"
+    template_name = "core/catalogo/operador_form.html"
     success_url = reverse_lazy("operador_list")
 
 class OperadorUpdateView(OperadorAccesoMixin, UpdateView):
     model = Operador
     form_class = OperadorForm
-    template_name = "core/catalogo/form_generico.html"
+    template_name = "core/catalogo/operador_form.html"
     success_url = reverse_lazy("operador_list")
 
 class OperadorDeleteView(OperadorAccesoMixin, DeleteView):

@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>{% if object %}Editar operador{% else %}Registrar operador{% endif %}</h2>
+<div class="alert alert-info mt-3">{{ form.area_adscripcion }}</div>
+<div class="card"><div class="card-body">
+    <form method="post" id="operador-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+        {% for campo in form %}
+        <div class="mb-3"
+             {% if campo.name == 'usuario' %}data-tipo="INTERNO"{% if form.tipo_actual == 'EXTERNO' %} hidden{% endif %}
+             {% elif campo.name == 'nombre_externo' or campo.name == 'telefono_externo' or campo.name == 'proveedor' %}data-tipo="EXTERNO"{% if form.tipo_actual != 'EXTERNO' %} hidden{% endif %}{% endif %}>
+            <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+            {{ campo }}
+            {% for error in campo.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'operador_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div></div>
+<script>
+(() => {
+    const formulario = document.getElementById('operador-form');
+    const tipo = formulario.elements.namedItem('tipo');
+    function mostrarCampos() {
+        const seleccionado = tipo.value || 'INTERNO';
+        formulario.querySelectorAll('[data-tipo]').forEach(grupo => {
+            const mostrar = grupo.dataset.tipo === seleccionado;
+            grupo.hidden = !mostrar;
+            grupo.querySelectorAll('input, select').forEach(campo => {
+                campo.disabled = !mostrar;
+                campo.required = mostrar;
+            });
+        });
+    }
+    tipo.addEventListener('change', mostrarCampos);
+    mostrarCampos();
+})();
+</script>
+{% endblock %}
