@@ -1,0 +1,103 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+{# TQV-77 · Detalle de la solicitud con la línea de tiempo de firmas #}
+{% include 'core/catalogo/_estilos_tabla.html' %}
+<style>
+  .au-form { padding: 22px 26px; }
+  .dato dt { color: #063d6f; font-weight: 700; font-size: .85rem; }
+  .dato dd { margin-bottom: .8rem; }
+  .linea { list-style: none; padding: 0; margin: 0; position: relative; }
+  .linea li { position: relative; padding: 0 0 22px 44px; }
+  .linea li::before { content: ""; position: absolute; left: 15px; top: 30px; bottom: 0; width: 2px; background: #dbe3ec; }
+  .linea li:last-child::before { display: none; }
+  .linea .punto { position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%;
+                  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+                  background: #eef1f5; color: #9aa3ad; border: 2px solid #dbe3ec; }
+  .linea li.hecho .punto { background: #063d6f; color: #fff; border-color: #063d6f; }
+  .linea li.hecho::before { background: #063d6f; }
+  .linea li.rechazo .punto { background: #c0392b; border-color: #c0392b; color: #fff; }
+  .linea .titulo { font-weight: 700; color: #063d6f; }
+  .linea li:not(.hecho) .titulo { color: #9aa3ad; }
+  .linea .quien { font-size: .85rem; color: #44546a; }
+  .linea .nota { font-size: .85rem; background: #fff7ea; border-left: 3px solid #f7941d; padding: 6px 10px; border-radius: 6px; margin-top: 6px; }
+</style>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+  <div>
+    <h1 class="au-titulo mb-1">Solicitud {{ solicitud.pk|stringformat:"03d" }}</h1>
+    <p class="fw-semibold mb-3" style="color:#063d6f">
+      Estado actual: <span class="chip {% if solicitud.estado == 'RECHAZADA' %}chip-falta{% else %}chip-ok{% endif %}">{{ solicitud.get_estado_display }}</span>
+    </p>
+  </div>
+  {% if user.rol.clave == 'DGTV' or user.rol.clave == 'ADMIN' or user.is_superuser %}
+  <a href="{% url 'solicitudes:bandeja_dgtv' %}" class="btn btn-borde"><i class="bi bi-arrow-left"></i> Bandeja</a>
+  {% endif %}
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="au-card au-form h-100">
+      <h5 class="fw-bold mb-3" style="color:#063d6f">Datos de la visita</h5>
+      <dl class="dato mb-0">
+        <dt>Docente</dt><dd>{{ solicitud.docente.nombre_completo }}</dd>
+        <dt>Grupo</dt><dd>{{ solicitud.grupo.clave }} · {{ solicitud.grupo.materia.nombre }}</dd>
+        <dt>Número de alumnos</dt><dd>{{ solicitud.numero_alumnos }}</dd>
+        <dt>Empresas</dt><dd>{{ solicitud.empresas|linebreaksbr }}</dd>
+        <dt>Fecha de la visita</dt><dd>{{ solicitud.fecha_visita|date:"d/m/Y" }}</dd>
+        <dt>Objetivo</dt><dd class="mb-0">{{ solicitud.objetivo|linebreaksbr }}</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="au-card au-form h-100">
+      <h5 class="fw-bold mb-3" style="color:#063d6f">Firmas</h5>
+      <ol class="linea">
+        {% for paso in pasos %}
+        <li class="{% if paso.hecho %}hecho{% endif %} {% if paso.rechazo %}rechazo{% endif %}">
+          <span class="punto"><i class="bi {% if paso.rechazo %}bi-x-lg{% elif paso.hecho %}bi-check-lg{% else %}bi-hourglass{% endif %}"></i></span>
+          <div class="titulo">{{ paso.titulo }}</div>
+          {% if paso.hecho %}
+            <div class="quien">{{ paso.usuario.nombre_completo }} · {{ paso.fecha|date:"d/m/Y H:i" }}</div>
+            {% if paso.comentario %}<div class="nota">{{ paso.comentario }}</div>{% endif %}
+          {% else %}
+            <div class="quien">Pendiente</div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+
+      {% if puede_recibir %}
+      <form method="post" action="{% url 'solicitudes:recibir' solicitud.pk %}" class="mt-2">
+        {% csrf_token %}
+        <label class="form-label small fw-semibold" style="color:#063d6f" for="comentario">Comentario (opcional)</label>
+        <input type="text" name="comentario" id="comentario" class="form-control mb-2" placeholder="Ej. Expediente completo">
+        <button type="submit" class="btn btn-azul"><i class="bi bi-inbox-fill"></i> Recibir solicitud</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if historial %}
+<div class="au-card au-tabla mt-3 pt-3">
+  <h5 class="fw-bold" style="color:#063d6f">Historial completo</h5>
+  <div class="table-responsive">
+    <table class="table table-sm mb-2">
+      <thead><tr><th>Fecha</th><th>Usuario</th><th>Cambio</th><th>Comentario</th></tr></thead>
+      <tbody>
+        {% for h in historial %}
+        <tr>
+          <td class="text-nowrap">{{ h.fecha|date:"d/m/Y H:i" }}</td>
+          <td>{{ h.usuario.nombre_completo }}</td>
+          <td>{{ h.get_estado_anterior_display|default:"—" }} → <strong>{{ h.get_estado_nuevo_display }}</strong></td>
+          <td>{{ h.comentario|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
