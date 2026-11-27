@@ -78,3 +78,7 @@ urlpatterns = [
     # Solicitudes
     path("solicitudes/", include("solicitudes.urls")),
 ]
+
+
+# TQV-35 - Catalogo de empresas
+urlpatterns += [path('catalogo/empresas/', include('core.empresas_urls'))]
