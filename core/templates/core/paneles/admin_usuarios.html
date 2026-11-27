@@ -83,7 +83,7 @@
           <th>Correo</th>
           <th>Teléfono</th>
           <th>Rol</th>
-          <th>Departamento</th>
+          <th>Departamento / Área</th>
           <th class="text-center">Acciones</th>
         </tr>
       </thead>
@@ -98,7 +98,7 @@
           <td>{{ u.correo }}</td>
           <td>{{ u.telefono|default:"—" }}</td>
           <td>{{ u.rol.nombre|default:"Sin rol" }}</td>
-          <td>{{ u.departamento.nombre|default:"—" }}</td>
+          <td>{{ u.departamento_mostrado|default:"—" }}</td>
           <td class="text-center text-nowrap">
             <a href="{% url 'admin_usuario_update' u.pk %}" class="au-accion" title="Editar"><i class="bi bi-pencil-fill"></i></a>
             {% if u.pk != user.pk %}

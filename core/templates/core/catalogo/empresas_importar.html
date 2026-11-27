@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Importar empresas desde Excel</h2>
+<div class='card mt-3'><div class='card-body'>
+<p>Descarga la plantilla y completa una empresa por renglón, sin cambiar los encabezados. Se lee la hoja seleccionada en el archivo.</p>
+<p>Si el nombre ya existe, se actualizan sus datos; también se reconocen nombres con diferencias de mayúsculas o espacios al principio y al final. Las filas con errores no se guardan y las válidas sí.</p>
+<p>En foranea y activa escribe Si o No. Si quedan vacíos se usa No y Si, respectivamente. El cupo debe ser de 1 a 40; vacío se usa 30. Estos valores también se aplican al actualizar empresas.</p>
+<p>Escribe los teléfonos como texto para conservar sus ceros iniciales. Usa valores, sin fórmulas.</p>
+<a href='{% url 'empresa_plantilla' %}' class='btn btn-primary mb-3'>Descargar plantilla Excel</a>
+<form method='post' enctype='multipart/form-data'>
+{% csrf_token %}
+{{ form.as_p }}
+<button type='submit' class='btn btn-primary'>Importar Excel</button>
+<a href='{% url 'empresa_list' %}' class='btn btn-secondary'>Volver a empresas</a>
+</form>
+</div></div>
+{% if resultado %}
+<div class='card mt-3'><div class='card-body'>
+<h3>Resultado de la carga</h3>
+<p>Creadas: <strong>{{ resultado.creadas }}</strong> · Actualizadas: <strong>{{ resultado.actualizadas }}</strong> · Filas con error: <strong>{{ resultado.errores|length }}</strong></p>
+{% if resultado.errores %}
+<p>Corrige las filas indicadas y vuelve a subir el archivo. Las empresas existentes se actualizarán.</p>
+<div class='table-responsive'><table class='table'>
+<thead><tr><th>Renglón en Excel</th><th>Error</th></tr></thead>
+<tbody>{% for error in resultado.errores %}<tr><td>{{ error.fila }}</td><td>{{ error.mensaje }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<p>No se encontraron errores en las filas procesadas.</p>{% endif %}
+</div></div>
+{% endif %}
+{% endblock %}

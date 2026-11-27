@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "usuarios",
     "core",
     "solicitudes",
+    "periodos",
 ]
 
 MIDDLEWARE = [

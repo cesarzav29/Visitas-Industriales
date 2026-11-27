@@ -3,8 +3,15 @@ from django.contrib.auth import password_validation
 from django.contrib.auth import get_user_model
 from .models import Alumno, Departamento, Carrera, Materia, Grupo, Operador, ProveedorTransporte, Unidad
 from usuarios.models import Rol
+from usuarios.constants import AREA_OPERADORES
 
 Usuario = get_user_model()
+
+class DigitosFormField(forms.CharField):
+    def to_python(self, valor):
+        texto = super().to_python(valor)
+        return ''.join(c for c in texto if not c.isspace() and c not in '-().')
+
 
 class DepartamentoForm(forms.ModelForm):
     class Meta:
@@ -48,14 +55,20 @@ class GrupoForm(forms.ModelForm):
 
 
 class OperadorForm(forms.ModelForm):
-    """TQV-37 · Alta y edición de operadores."""
+    """TQV-43 · Alta y edición de operadores internos y externos."""
+    area_adscripcion = AREA_OPERADORES
 
     class Meta:
         model = Operador
-        fields = ["usuario", "licencia", "vigencia_licencia", "direccion", "activo"]
+        fields = ["tipo", "usuario", "nombre_externo", "telefono_externo", "proveedor",
+                  "licencia", "vigencia_licencia", "direccion", "activo"]
         labels = {"usuario": "Usuario (rol Operador)"}
         widgets = {
+            "tipo": forms.Select(attrs={"class": "form-select"}),
             "usuario": forms.Select(attrs={"class": "form-select"}),
+            "nombre_externo": forms.TextInput(attrs={"class": "form-control"}),
+            "telefono_externo": forms.TextInput(attrs={"class": "form-control", "type": "tel"}),
+            "proveedor": forms.Select(attrs={"class": "form-select"}),
             "licencia": forms.TextInput(attrs={"class": "form-control"}),
             "vigencia_licencia": forms.DateInput(attrs={"class": "form-control", "type": "date"}, format="%Y-%m-%d"),
             "direccion": forms.TextInput(attrs={"class": "form-control"}),
@@ -64,16 +77,48 @@ class OperadorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.tipo_actual = (
+            self.data.get(self.add_prefix("tipo"), self.instance.tipo)
+            if self.is_bound else self.initial.get("tipo", self.instance.tipo)
+        )
+        # Mantener compatibles las altas anteriores, que no enviaban el tipo.
+        self.fields["tipo"].required = False
+        es_externo = self.tipo_actual == Operador.Tipo.EXTERNO
+        self.fields["usuario"].required = not es_externo
+        for nombre in ("nombre_externo", "telefono_externo", "proveedor"):
+            self.fields[nombre].required = es_externo
+            self.fields[nombre].disabled = not es_externo
+            if not es_externo:
+                self.initial[nombre] = None if nombre == "proveedor" else ""
+        self.fields["usuario"].disabled = es_externo
+        if es_externo:
+            self.initial["usuario"] = None
         disponibles = self.fields["usuario"].queryset.filter(operador__isnull=True)
         if self.instance.pk:
             disponibles = disponibles | self.fields["usuario"].queryset.filter(pk=self.instance.usuario_id)
         self.fields["usuario"].queryset = disponibles
+
+    def clean_tipo(self):
+        return self.cleaned_data.get("tipo") or Operador.Tipo.INTERNO
+
+    def clean_telefono_externo(self):
+        valor = self.cleaned_data.get("telefono_externo", "")
+        return "".join(c for c in valor if not c.isspace() and c not in "-().")
+
+    def clean(self):
+        datos = super().clean()
+        if datos.get("tipo") == Operador.Tipo.EXTERNO:
+            datos["usuario"] = None
+        else:
+            datos.update(nombre_externo="", telefono_externo="", proveedor=None)
+        return datos
 
     def clean_licencia(self):
         return self.cleaned_data["licencia"].strip().upper()
 
 class UsuarioForm(forms.ModelForm):
     """TQV-31 · Alta y edición de usuarios por el administrador."""
+    area_operador = AREA_OPERADORES
 
     password1 = forms.CharField(
         label="Contraseña",
@@ -106,6 +151,12 @@ class UsuarioForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["rol"].required = True
+        self.rol_operador_pk = Rol.objects.filter(clave=Rol.Clave.OPERADOR).values_list("pk", flat=True).first()
+        rol_actual = self.data.get(self.add_prefix("rol")) if self.is_bound else self.initial.get("rol")
+        self.es_operador = self.rol_operador_pk is not None and str(rol_actual) == str(self.rol_operador_pk)
+        self.fields["departamento"].disabled = self.es_operador
+        if self.es_operador:
+            self.initial["departamento"] = None
         if not self.instance.pk:
             self.fields["password1"].required = True
             self.fields["password2"].required = True
@@ -122,6 +173,9 @@ class UsuarioForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        rol = cleaned_data.get("rol")
+        if rol and rol.clave == Rol.Clave.OPERADOR:
+            cleaned_data["departamento"] = None
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
         if password1 or password2:
@@ -155,6 +209,14 @@ class RolForm(forms.ModelForm):
 # --- TQV-34 · Alumnos ---
 class AlumnoForm(forms.ModelForm):
     """Alta y edición de alumnos, con los grupos en los que está inscrito."""
+
+    no_seguro_facultativo = DigitosFormField(
+        label='Número de seguro facultativo (NSS)', required=False,
+        max_length=11,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': '11 dígitos', 'maxlength': 20,
+        }),
+    )
 
     class Meta:
         model = Alumno
@@ -242,6 +304,14 @@ class UnidadForm(forms.ModelForm):
 
 # --- TQV-38 · Proveedores de transporte externo ---
 class ProveedorTransporteForm(forms.ModelForm):
+    telefono = DigitosFormField(
+        label='Teléfono', max_length=10,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'type': 'tel',
+            'placeholder': '10 dígitos', 'maxlength': 30,
+        }),
+    )
+
     class Meta:
         model = ProveedorTransporte
         fields = ["nombre", "contacto", "telefono", "correo", "activo"]
