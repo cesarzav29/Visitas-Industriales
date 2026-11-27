@@ -127,7 +127,10 @@
         <a href="{% url 'proveedor_list' %}"><i class="bi bi-truck me-2"></i> Proveedores</a>
         {% endif %}
         
-        <hr class="text-secondary mx-3">
+        {% if user.is_superuser or user.rol.clave == 'DGTV' or user.rol.clave == 'JEFE_PROY_VINC' or user.rol.clave == 'ADMIN' %}
+<a href='{% url 'empresa_list' %}'><i class='bi bi-buildings me-2'></i> Empresas</a>
+{% endif %}
+<hr class="text-secondary mx-3">
         <form method="post" action="{% url 'usuarios:logout' %}" class="m-0 p-0">
     {% csrf_token %}
     <button type="submit" class="btn btn-link text-light text-decoration-none w-100 text-start px-3 py-2" style="font-weight: 500;">

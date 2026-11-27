@@ -1,6 +1,7 @@
 from django.conf import settings
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
+from django.db.models.functions import Lower, Trim
 
 
 class Departamento(models.Model):
@@ -183,3 +184,85 @@ class ProveedorTransporte(models.Model):
         verbose_name = "Proveedor de transporte"
         verbose_name_plural = "Proveedores de transporte"
         ordering = ["nombre"]
+
+
+# TQV-35 - Catalogo de empresas
+class Empresa(models.Model):
+    nombre = models.CharField(
+        max_length=200,
+        unique=True,
+    )
+
+    direccion = models.CharField(
+        "dirección",
+        max_length=300,
+    )
+
+    ciudad = models.CharField(max_length=150)
+
+    telefono = models.CharField(
+        "teléfono",
+        max_length=30,
+    )
+
+    titular_nombre = models.CharField(
+        "nombre del titular",
+        max_length=150,
+    )
+
+    titular_cargo = models.CharField(
+        "cargo del titular",
+        max_length=150,
+    )
+
+    contacto_nombre = models.CharField(
+        "nombre del contacto",
+        max_length=150,
+    )
+
+    contacto_correo = models.EmailField(
+        "correo del contacto",
+    )
+
+    contacto_telefono = models.CharField(
+        "teléfono del contacto",
+        max_length=30,
+    )
+
+    foranea = models.BooleanField(
+        "foránea",
+        default=False,
+    )
+
+    cupo_maximo = models.PositiveSmallIntegerField(
+        "cupo máximo por visita",
+        default=30,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(40),
+        ],
+    )
+
+    activa = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = "Empresa"
+        verbose_name_plural = "Empresas"
+        ordering = ["nombre"]
+
+        constraints = [
+            models.UniqueConstraint(
+                Lower(Trim("nombre")),
+                name="empresa_nombre_normalizado_unico",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    cupo_maximo__gte=1,
+                    cupo_maximo__lte=40,
+                ),
+                name="empresa_cupo_entre_1_y_40",
+            ),
+        ]
